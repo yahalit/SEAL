@@ -1,0 +1,5 @@
+# Ignore MATLAB/Simulink cache & build dirs anywhere
+AutoCache/
+slprj/
+AutoCode/slprj/
+AutoCode/Seal_ert_rtw/html/
