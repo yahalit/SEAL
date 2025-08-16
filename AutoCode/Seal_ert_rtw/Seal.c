@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.32
+ * Model version                  : 11.34
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Sat Aug 16 08:03:07 2025
+ * C/C++ source code generated on : Sat Aug 16 11:05:32 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -54,6 +54,17 @@ SystemData SystemData_init = {
 } ;                                    /* Variable: SystemData_init
                                         * Referenced by: '<Root>/Data Store Memory4'
                                         */
+
+SEALVerControl SEALVerControl_init = {
+  1U,
+  1U,
+  0U
+} ;                                    /* Variable: SEALVerControl_init
+                                        * Referenced by: '<Root>/Data Store Memory6'
+                                        */
+
+/* Exported block states */
+SEALVerControl G_SEALVerControl;       /* '<Root>/Data Store Memory6' */
 
 /* Block signals and states (default storage) */
 DW rtDW;
@@ -270,6 +281,9 @@ void IdleLoopUART(void)
 /* Model initialize function */
 void Seal_initialize(void)
 {
+  /* Start for DataStoreMemory: '<Root>/Data Store Memory6' */
+  G_SEALVerControl = SEALVerControl_init;
+
   /* Start for DataStoreMemory: '<Root>/Data Store Memory2' */
   rtDW.G_PosProfilerData = PosProfilerData_init;
 

@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.32
+ * Model version                  : 11.34
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Sat Aug 16 08:03:07 2025
+ * C/C++ source code generated on : Sat Aug 16 11:05:32 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -330,6 +330,22 @@ typedef struct {
 
 #endif
 
+#ifndef DEFINED_TYPEDEF_FOR_SEALVerControl_
+#define DEFINED_TYPEDEF_FOR_SEALVerControl_
+
+typedef struct {
+  /* SEAL database version */
+  uint16_T Version;
+
+  /* SEAL database sub version */
+  uint16_T SubVersion;
+
+  /* SEAL database support data */
+  uint32_T UserData;
+} SEALVerControl;
+
+#endif
+
 #ifndef DEFINED_TYPEDEF_FOR_CANCyclicBuf_
 #define DEFINED_TYPEDEF_FOR_CANCyclicBuf_
 
@@ -416,6 +432,19 @@ extern PosProfilerData PosProfilerData_init;/* Variable: PosProfilerData_init
 extern SystemData SystemData_init;     /* Variable: SystemData_init
                                         * Referenced by: '<Root>/Data Store Memory4'
                                         */
+extern SEALVerControl SEALVerControl_init;/* Variable: SEALVerControl_init
+                                           * Referenced by: '<Root>/Data Store Memory6'
+                                           */
+
+/*
+ * Exported States
+ *
+ * Note: Exported states are block states with an exported global
+ * storage class designation.  Code generation will declare the memory for these
+ * states and exports their symbols.
+ *
+ */
+extern SEALVerControl G_SEALVerControl;/* '<Root>/Data Store Memory6' */
 
 /* Model entry point functions */
 extern void Seal_initialize(void);

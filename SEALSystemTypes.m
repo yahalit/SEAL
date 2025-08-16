@@ -12,11 +12,18 @@ velems(3,1) =Simulink.BusElement ;
 velems(1) = SetBusElement('Version','uint16',"SEAL database version" ) ; 
 velems(2) = SetBusElement('SubVersion','uint16',"SEAL database sub version" ) ; 
 velems(3) = SetBusElement('UserData','uint32',"SEAL database support data" ) ; 
-bus = LogBusInSLDD(DataDictionary,  'SEALVerControl' , velems) ;
+VersionControlStruct = LogBusInSLDD(DataDictionary,  'SEALVerControl' , velems) ;
 
-% VersionControlStruct.Version = 1 ; 
-% VersionControlStruct.SubVersion = 1 ; 
-% VersionControlStruct.UserData = 0 ; 
+VersionControlStruct.Version = 1 ; 
+VersionControlStruct.SubVersion = 1 ; 
+VersionControlStruct.UserData = 0 ; 
+SEALVerControl_init = Simulink.Parameter;
+SEALVerControl_init.DataType = 'Bus: SEALVerControl';
+SEALVerControl_init.Value     = VersionControlStruct ;
+SEALVerControl_init.StorageClass  = 'ExportedGlobal';
+
+assignin(dataSection,'SEALVerControl_init',SEALVerControl_init);    
+
 
 LogSignalInSLDD(dataSection, 'SEALVerControl' , 'G_SEALVerControl','ExportedGlobal' ) ; 
 
