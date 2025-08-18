@@ -2,7 +2,7 @@
 ## Makefile generated for component 'Seal'. 
 ## 
 ## Makefile     : Seal.mk
-## Generated on : Fri Aug 15 12:46:31 2025
+## Generated on : Sun Aug 17 13:12:46 2025
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)\Seal.exe
 ## Product type : executable
 ## 
@@ -211,7 +211,7 @@ PREBUILT_OBJS =
 ## LIBRARIES
 ###########################################################################
 
-LIBS = 
+LIBS = $(START_DIR)\slprj\ert\_sharedutils\rtwshared.lib
 
 ###########################################################################
 ## SYSTEM LIBRARIES
@@ -261,7 +261,7 @@ all : build
 build : set_environment_variables prebuild $(PRODUCT)
 
 
-buildobj : set_environment_variables prebuild $(OBJS) $(PREBUILT_OBJS)
+buildobj : set_environment_variables prebuild $(OBJS) $(PREBUILT_OBJS) $(LIBS)
 	@cmd /C "@echo ### Successfully generated all binary outputs."
 
 
@@ -290,9 +290,9 @@ set_environment_variables :
 # Create a standalone executable            
 #-------------------------------------------
 
-$(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(MAIN_OBJ)
+$(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(LIBS) $(MAIN_OBJ)
 	@cmd /C "@echo ### Creating standalone executable "$(PRODUCT)" ..."
-	$(LD) $(LDFLAGS) -out:$(PRODUCT) @$(CMD_FILE) $(SYSTEM_LIBS) $(TOOLCHAIN_LIBS)
+	$(LD) $(LDFLAGS) -out:$(PRODUCT) @$(CMD_FILE) $(LIBS) $(SYSTEM_LIBS) $(TOOLCHAIN_LIBS)
 	@cmd /C "@echo ### Created: $(PRODUCT)"
 
 

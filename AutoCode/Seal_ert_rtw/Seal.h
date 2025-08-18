@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.34
+ * Model version                  : 11.51
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Sat Aug 16 11:05:32 2025
+ * C/C++ source code generated on : Sun Aug 17 14:48:05 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -107,62 +107,62 @@ typedef struct {
 #define DEFINED_TYPEDEF_FOR_SetupReportBuf_
 
 typedef struct {
-  /* The main encoder sensor */
-  int32_T EncoderMain;
+  /* Maximum position referece */
+  real_T MaximumPositionReference;
 
-  /* The secondary encoder sensor */
-  int32_T EncoderSecondary;
+  /* Minimum position reference */
+  real_T MinimumPositionReference;
 
-  /* Speed of main encoder sensor */
-  real32_T EncoderMainSpeed;
+  /* High position value that causes an exception  */
+  real_T HighPositionException;
 
-  /* Speed of secondary encoder sensor */
-  real32_T EncoderSecondarySpeed;
+  /* Low position value that causes an exception  */
+  real_T LowPositionException;
 
-  /* Q-channel current Amp */
-  real32_T Iq;
+  /* Absolute speed limit */
+  real32_T AbsoluteSpeedLimit;
 
-  /* Q-channel current Amp */
-  real32_T Id;
+  /* Modulo count for position sensor #1 */
+  real_T PositionModulo1;
 
-  /* DC bus voltage V */
-  real32_T DcBusVoltage;
+  /* Modulo count for position sensor #2 */
+  real_T PositionModulo2;
 
-  /* Power stage temperature C */
-  real32_T PowerStageTemperature;
+  /* Speed for overspeed exception */
+  real32_T OverSpeed;
 
-  /* Motor electrical field angle */
-  real32_T FieldAngle;
+  /* Absolute acceleration limit */
+  real32_T AbsoluteAccelerationLimit;
 
-  /* Spare : 10 */
-  int32_T Spare_10;
+  /* Continuous current limit */
+  real32_T ContinuousCurrentLimit;
 
-  /* Spare : 11 */
-  int32_T Spare_11;
+  /* Peak current limit */
+  real32_T PeakCurrentLimit;
 
-  /* Spare : 12 */
-  int32_T Spare_12;
+  /* Peak current duration */
+  real32_T PeakCurrentDuration;
 
-  /* Control loop configuration */
-  int16_T LoopConfiguration;
+  /* Over current that causes an exception */
+  real32_T OverCurrent;
 
-  /* ReferenceMode */
-  int16_T ReferenceMode;
+  /* Baud rate of UART */
+  uint32_T UARTBaudRate;
 
-  /* Motor on report */
-  int16_T MotorOn;
+  /* Baud rate of CAN */
+  uint32_T CANBaudRate;
 
-  /* Code of Hall sensors */
-  int16_T HallCode;
+  /* Is Sensor modulo: 1 */
+  uint16_T IsPosSensorModulo1;
 
-  /* 1 if disabled by STO */
-  int16_T STODisable;
+  /* Is Sensor modulo: 2 */
+  uint16_T IsPosSensorModulo2;
 
-  /* Status bit field */
-  int16_T StatusBitField;
+  /* CAN ID 11bit */
+  uint16_T CANId11bit;
 
-  /* Motor failure report */
-  uint32_T ErrorCode;
+  /* Profiler sampling time  */
+  real32_T Ts;
 
   /* Spare : 20 */
   int32_T Spare_20;
@@ -289,31 +289,6 @@ typedef struct {
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_SystemData_
-#define DEFINED_TYPEDEF_FOR_SystemData_
-
-typedef struct {
-  /* Profiler sampling time  */
-  real32_T Ts;
-
-  /* Maximum position */
-  real32_T MaxPosition;
-
-  /* Minimum position */
-  real32_T MinPosition;
-
-  /* Absolute Speed limit */
-  real32_T AbsSpeedLimit;
-
-  /* Absolute Acceleration limit */
-  real32_T AbsAccelerationLimit;
-
-  /* Current command limit */
-  real32_T CurrentCommandLimit;
-} SystemData;
-
-#endif
-
 #ifndef DEFINED_TYPEDEF_FOR_PosProfilerState_
 #define DEFINED_TYPEDEF_FOR_PosProfilerState_
 
@@ -374,6 +349,40 @@ typedef struct {
 
 #endif
 
+#ifndef DEFINED_TYPEDEF_FOR_MicroInterp_
+#define DEFINED_TYPEDEF_FOR_MicroInterp_
+
+typedef struct {
+  /* 1 if this is a get function */
+  uint16_T IsGetFunc;
+
+  /* Temporary string to hold characters extracted from the cyclical buffer */
+  uint16_T TempString[64];
+
+  /* String formatting error */
+  uint16_T InterpretError;
+
+  /* In string counter */
+  uint16_T cnt;
+
+  /* Argument of a set function */
+  real_T Argument;
+
+  /* State of the interpreting process */
+  uint16_T State;
+
+  /* Indicate a new string is available */
+  uint16_T NewString;
+
+  /* Mnemonic index */
+  uint16_T MnemonicIndex;
+
+  /* Array index */
+  uint16_T ArrayIndex;
+} MicroInterp;
+
+#endif
+
 #ifndef DEFINED_TYPEDEF_FOR_UartCyclicBuf_
 #define DEFINED_TYPEDEF_FOR_UartCyclicBuf_
 
@@ -400,7 +409,6 @@ typedef struct {
 typedef struct {
   PosProfilerState G_PosProfilerState; /* '<Root>/Data Store Memory5' */
   PosProfilerData G_PosProfilerData;   /* '<Root>/Data Store Memory2' */
-  SystemData G_SystemData;             /* '<Root>/Data Store Memory4' */
 } DW;
 
 /* Imported (extern) states */
@@ -408,9 +416,10 @@ extern CANCyclicBuf G_CANCyclicBuf_in; /* '<S3>/G_CANCyclicBuf_in' */
 extern CANCyclicBuf G_CANCyclicBuf_out;/* '<S3>/G_CANCyclicBuf_out' */
 extern UartCyclicBuf G_UartCyclicBuf_in;/* '<S4>/G_UartCyclicBuf_in' */
 extern UartCyclicBuf G_UartCyclicBuf_out;/* '<S4>/G_UartCyclicBuf_out' */
+extern MicroInterp G_MicroInterp;      /* '<S4>/G_MicroInterp' */
+extern SetupReportBuf G_SetupReportBuf;/* '<Root>/Data Store Memory1' */
 extern DrvCommandBuf G_DrvCommandBuf;  /* '<Root>/Data Store Memory3' */
 extern FeedbackBuf G_FeedbackBuf;      /* '<Root>/Data Store Memory' */
-extern SetupReportBuf G_SetupReportBuf;/* '<Root>/Data Store Memory1' */
 
 /* Block signals and states (default storage) */
 extern DW rtDW;
@@ -429,9 +438,6 @@ extern PosProfilerState PosProfilerState_init;/* Variable: PosProfilerState_init
 extern PosProfilerData PosProfilerData_init;/* Variable: PosProfilerData_init
                                              * Referenced by: '<Root>/Data Store Memory2'
                                              */
-extern SystemData SystemData_init;     /* Variable: SystemData_init
-                                        * Referenced by: '<Root>/Data Store Memory4'
-                                        */
 extern SEALVerControl SEALVerControl_init;/* Variable: SEALVerControl_init
                                            * Referenced by: '<Root>/Data Store Memory6'
                                            */

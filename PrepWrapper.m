@@ -10,10 +10,12 @@
 CFile = "Seal.c"; 
 HFile = "Seal.h"; 
 EHFile = "ExternSeal.h"; 
+ECFile = "ExternSeal.c"; 
 CodeDir = evalin('base','cfg.CodeGenFolder') + "\Seal_ert_rtw";
 HFile= fullfile(CodeDir,HFile) ; 
 CFile= fullfile(CodeDir,CFile) ; 
 EHFile= fullfile(CodeDir,EHFile) ; 
+ECFile= fullfile(CodeDir,ECFile) ; 
 
 
 %% Look for all the variables defined in the h that have no declaration in the c
@@ -22,6 +24,7 @@ EHFile= fullfile(CodeDir,EHFile) ;
 U(Inda) = [] ; 
 V(Inda) = [] ; 
 
+ [ints,idles] = scan_isr_idle(HFile) ;
 
 lines = ["#ifndef EXTERN_SEAL_DEF_H"  ; ... 
          "#define EXTERN_SEAL_DEF_H"  ; ...
@@ -35,13 +38,20 @@ for cnt = 1:numel(U)
 end
 
 
+fptr = "voidFunc fptr[8] = {Seal_initialize,NULL,NULL,NULL,NULL,NULL,NULL,NULL} " ;  
+
+
 lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf,(bPtr)&G_CANCyclicBuf_in,(bPtr)&G_CANCyclicBuf_out," + ...
-         "(bPtr)&G_SEALVerControl,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};" ;  ...
+         "(bPtr)&G_UartCyclicBuf_in,(bPtr)&G_UartCyclicBuf_out,(bPtr)&G_SEALVerControl,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};" ;  ...
          "#pragma DATA_SECTION (BufferPtrs,.DS_INTFC_PTRS)" ] ; 
          
 
-
-lines = [lines ; lptr ; "#endif"] ;  
+lines = [lines ; fptr ; lptr ; "#endif"] ;  
 
 
 writelines(lines, EHFile);                 % overwrite or create
+
+
+%% Write the C file 
+% writelines(lines, ECFile);                 % overwrite or create
+
