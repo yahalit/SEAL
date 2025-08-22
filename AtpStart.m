@@ -1,3 +1,4 @@
+HwTarget = "C28";
 % Set the directories to produce code 
 ModelName = 'Seal';                 % your model name (without .slx/.mdl)
 
@@ -26,4 +27,16 @@ if ~bdIsLoaded(ModelName)
 end
 mdl = get_param(ModelName, 'Handle'); % numeric handle to the block diagram
 
+%% Generate code for C2000
+ModelConfigurationSet  = getActiveConfigSet(mdl);
+set_param(ModelConfigurationSet,'ProdEqTarget','on');
+if  isequal( HwTarget,"C28" )
+    set_param(ModelConfigurationSet,'ProdHWDeviceType','Texas Instruments->C2000');
+elseif  isequal( HwTarget,"C29" )
+    set_param(ModelConfigurationSet,'ProdHWDeviceType','Texas Instruments->C2000-C29x');
+else
+    error("Unknown Hardware target option") ; 
+end
+
+%% Log the post-code-generation processor
 set_param(mdl,'PostCodeGenCommand','PrepWrapper');

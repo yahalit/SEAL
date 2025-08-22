@@ -12,6 +12,8 @@ HFile = "Seal.h";
 EHFile = "ExternSeal.h"; 
 ECFile = "ExternSeal.c"; 
 CodeDir = evalin('base','cfg.CodeGenFolder') + "\Seal_ert_rtw";
+BaseTs  = 50e-6 ; 
+
 HFile= fullfile(CodeDir,HFile) ; 
 CFile= fullfile(CodeDir,CFile) ; 
 EHFile= fullfile(CodeDir,EHFile) ; 
@@ -24,21 +26,27 @@ ECFile= fullfile(CodeDir,ECFile) ;
 U(Inda) = [] ; 
 V(Inda) = [] ; 
 
- [ints,idles] = scan_isr_idle(HFile) ;
+[ints,idles,setups,exceptions,aborts] = scan_isr_idle(HFile,BaseTs) ;
 
 lines = ["#ifndef EXTERN_SEAL_DEF_H"  ; ... 
          "#define EXTERN_SEAL_DEF_H"  ; ...
          "typedef const short unsigned * bPtr" ; 
-         "const char unsigned Gamili[] = ""Mi Haya Baruch Gamili"";" ;  ...
-         "#pragma DATA_SECTION (Gamili,.DS_GAMILI)" ] ; 
+         "const char unsigned GenesisVerse[] = ""In the beginning God created the heaven and the earth"";" ;  ...
+         "#pragma DATA_SECTION (GenesisVerse,.DS_GENESIS_VERSE)" ] ; 
 
 for cnt = 1:numel(U) 
     lines = [lines;U(cnt)+" "+V(cnt)+";" ] ; %#ok<*AGROW>
     % lines = [lines;"#pragma DATA_SECTION ("+U(cnt)+","+".DS_"+U(cnt)+")" ] ; 
 end
 
+InitializeLines = "(voidFunc) InitializeFuncs[8] = {(voidFunc)Seal_initialize,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL}; " ;
+IdleLoopLines   = BuildFuncDeclare('IdleLoopFuncs',idles) ; 
+ExceptionLines = BuildFuncDeclare('ExceptionFuncs' , exceptions)  ;
+AbortLines = BuildFuncDeclare('AbortFuncs' , aborts)  ;
+SetupLines      = BuildFuncDeclare('SetupFuncs',setups) ; 
+IsrLines        = BuildFuncDeclare('IsrFuncs',ints) ; 
 
-fptr = "voidFunc fptr[8] = {Seal_initialize,NULL,NULL,NULL,NULL,NULL,NULL,NULL} " ;  
+
 
 
 lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf,(bPtr)&G_CANCyclicBuf_in,(bPtr)&G_CANCyclicBuf_out," + ...
@@ -46,7 +54,7 @@ lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)
          "#pragma DATA_SECTION (BufferPtrs,.DS_INTFC_PTRS)" ] ; 
          
 
-lines = [lines ; fptr ; lptr ; "#endif"] ;  
+lines = [lines ; InitializeLines ;IdleLoopLines ; IsrLines ; SetupLines ; AbortLines ; ExceptionLines ; lptr ; "#endif"] ;  
 
 
 writelines(lines, EHFile);                 % overwrite or create

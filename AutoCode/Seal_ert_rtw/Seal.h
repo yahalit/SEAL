@@ -3,12 +3,12 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.51
+ * Model version                  : 11.71
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Sun Aug 17 14:48:05 2025
+ * C/C++ source code generated on : Thu Aug 21 09:41:15 2025
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: Texas Instruments->C2000
  * Code generation objectives:
  *    1. Execution efficiency
  *    2. Traceability
@@ -24,8 +24,10 @@
 #include "rtwtypes.h"
 #endif                                 /* Seal_COMMON_INCLUDES_ */
 
-#ifndef DEFINED_TYPEDEF_FOR_FeedbackBuf_
-#define DEFINED_TYPEDEF_FOR_FeedbackBuf_
+/* user code (top of header file) */
+#include ".\ExternalCode\CANServer.h"
+#ifndef DEFINED_TYPEDEF_FOR_FeedbackBuf_T_
+#define DEFINED_TYPEDEF_FOR_FeedbackBuf_T_
 
 typedef struct {
   /* The main encoder sensor */
@@ -99,12 +101,12 @@ typedef struct {
 
   /* Spare : 24 */
   int32_T Spare_24;
-} FeedbackBuf;
+} FeedbackBuf_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_SetupReportBuf_
-#define DEFINED_TYPEDEF_FOR_SetupReportBuf_
+#ifndef DEFINED_TYPEDEF_FOR_SetupReportBuf_T_
+#define DEFINED_TYPEDEF_FOR_SetupReportBuf_T_
 
 typedef struct {
   /* Maximum position referece */
@@ -178,12 +180,12 @@ typedef struct {
 
   /* Spare : 24 */
   int32_T Spare_24;
-} SetupReportBuf;
+} SetupReportBuf_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_PosProfilerData_
-#define DEFINED_TYPEDEF_FOR_PosProfilerData_
+#ifndef DEFINED_TYPEDEF_FOR_PosProfilerData_T_
+#define DEFINED_TYPEDEF_FOR_PosProfilerData_T_
 
 typedef struct {
   /* Final position to arrive */
@@ -206,12 +208,15 @@ typedef struct {
 
   /* Flag that profiler data is consistent */
   uint16_T ProfileDataOk;
-} PosProfilerData;
+
+  /* Profiler sampling time  */
+  real32_T Ts;
+} PosProfilerData_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_DrvCommandBuf_
-#define DEFINED_TYPEDEF_FOR_DrvCommandBuf_
+#ifndef DEFINED_TYPEDEF_FOR_DrvCommandBuf_T_
+#define DEFINED_TYPEDEF_FOR_DrvCommandBuf_T_
 
 typedef struct {
   /* Command to position controller */
@@ -285,12 +290,28 @@ typedef struct {
 
   /* Spare : 24 */
   int32_T Spare_24;
-} DrvCommandBuf;
+} DrvCommandBuf_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_PosProfilerState_
-#define DEFINED_TYPEDEF_FOR_PosProfilerState_
+#ifndef DEFINED_TYPEDEF_FOR_UserInfo_T_
+#define DEFINED_TYPEDEF_FOR_UserInfo_T_
+
+typedef struct {
+  /* Version control number */
+  int32_T VersionNumber;
+
+  /* Stam zbala */
+  real32_T junk1;
+
+  /* Stam vector zbala */
+  int32_T junk2[4];
+} UserInfo_T;
+
+#endif
+
+#ifndef DEFINED_TYPEDEF_FOR_PosProfilerState_T_
+#define DEFINED_TYPEDEF_FOR_PosProfilerState_T_
 
 typedef struct {
   /* Position state of profiler */
@@ -300,13 +321,13 @@ typedef struct {
   real_T Speed;
 
   /* State of profiling filter */
-  real_T FiltState[8];
-} PosProfilerState;
+  real_T FiltState[4];
+} PosProfilerState_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_SEALVerControl_
-#define DEFINED_TYPEDEF_FOR_SEALVerControl_
+#ifndef DEFINED_TYPEDEF_FOR_SEALVerControl_T_
+#define DEFINED_TYPEDEF_FOR_SEALVerControl_T_
 
 typedef struct {
   /* SEAL database version */
@@ -317,12 +338,12 @@ typedef struct {
 
   /* SEAL database support data */
   uint32_T UserData;
-} SEALVerControl;
+} SEALVerControl_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_CANCyclicBuf_
-#define DEFINED_TYPEDEF_FOR_CANCyclicBuf_
+#ifndef DEFINED_TYPEDEF_FOR_CANCyclicBuf_T_
+#define DEFINED_TYPEDEF_FOR_CANCyclicBuf_T_
 
 typedef struct {
   /* The place in the CANQueue where the next message is to be put */
@@ -345,12 +366,12 @@ typedef struct {
 
   /* Data length and attributes */
   uint16_T DLenAndAttrib[64];
-} CANCyclicBuf;
+} CANCyclicBuf_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_MicroInterp_
-#define DEFINED_TYPEDEF_FOR_MicroInterp_
+#ifndef DEFINED_TYPEDEF_FOR_MicroInterp_T_
+#define DEFINED_TYPEDEF_FOR_MicroInterp_T_
 
 typedef struct {
   /* 1 if this is a get function */
@@ -379,12 +400,12 @@ typedef struct {
 
   /* Array index */
   uint16_T ArrayIndex;
-} MicroInterp;
+} MicroInterp_T;
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_UartCyclicBuf_
-#define DEFINED_TYPEDEF_FOR_UartCyclicBuf_
+#ifndef DEFINED_TYPEDEF_FOR_UartCyclicBuf_T_
+#define DEFINED_TYPEDEF_FOR_UartCyclicBuf_T_
 
 typedef struct {
   /* The place in the UARTQueue where next character is to be put */
@@ -401,25 +422,40 @@ typedef struct {
 
   /* Software Queue for incoming UART characters */
   uint16_T UARTQueue[256];
-} UartCyclicBuf;
+} UartCyclicBuf_T;
 
+#endif
+
+#ifndef DEFINED_TYPEDEF_FOR_VarDataTypes_
+#define DEFINED_TYPEDEF_FOR_VarDataTypes_
+
+typedef uint16_T VarDataTypes;
+
+/* enum VarDataTypes */
+#define T_int32                        (0U)                      /* Default value */
+#define T_single                       (2U)
+#define T_int16                        (4U)
+#define T_uint32                       (8U)
+#define T_uint16                       (12U)
+#define T_double                       (16U)
 #endif
 
 /* Block signals and states (default storage) for system '<Root>' */
 typedef struct {
-  PosProfilerState G_PosProfilerState; /* '<Root>/Data Store Memory5' */
-  PosProfilerData G_PosProfilerData;   /* '<Root>/Data Store Memory2' */
+  PosProfilerData_T G_PosProfilerData; /* '<Root>/Data Store Memory2' */
+  PosProfilerState_T G_PosProfilerState;/* '<Root>/Data Store Memory5' */
+  real_T DiscreteFilter_states;        /* '<S1>/Discrete Filter' */
 } DW;
 
 /* Imported (extern) states */
-extern CANCyclicBuf G_CANCyclicBuf_in; /* '<S3>/G_CANCyclicBuf_in' */
-extern CANCyclicBuf G_CANCyclicBuf_out;/* '<S3>/G_CANCyclicBuf_out' */
-extern UartCyclicBuf G_UartCyclicBuf_in;/* '<S4>/G_UartCyclicBuf_in' */
-extern UartCyclicBuf G_UartCyclicBuf_out;/* '<S4>/G_UartCyclicBuf_out' */
-extern MicroInterp G_MicroInterp;      /* '<S4>/G_MicroInterp' */
-extern SetupReportBuf G_SetupReportBuf;/* '<Root>/Data Store Memory1' */
-extern DrvCommandBuf G_DrvCommandBuf;  /* '<Root>/Data Store Memory3' */
-extern FeedbackBuf G_FeedbackBuf;      /* '<Root>/Data Store Memory' */
+extern CANCyclicBuf_T G_CANCyclicBuf_in;/* '<S5>/G_CANCyclicBuf_in' */
+extern CANCyclicBuf_T G_CANCyclicBuf_out;/* '<S5>/G_CANCyclicBuf_out' */
+extern UartCyclicBuf_T G_UartCyclicBuf_in;/* '<S6>/G_UartCyclicBuf_in' */
+extern UartCyclicBuf_T G_UartCyclicBuf_out;/* '<S6>/G_UartCyclicBuf_out' */
+extern MicroInterp_T G_MicroInterp;    /* '<S6>/G_MicroInterp' */
+extern SetupReportBuf_T G_SetupReportBuf;/* '<Root>/Data Store Memory1' */
+extern DrvCommandBuf_T G_DrvCommandBuf;/* '<Root>/Data Store Memory3' */
+extern FeedbackBuf_T G_FeedbackBuf;    /* '<Root>/Data Store Memory' */
 
 /* Block signals and states (default storage) */
 extern DW rtDW;
@@ -432,15 +468,24 @@ extern DW rtDW;
  * these parameters and exports their symbols.
  *
  */
-extern PosProfilerState PosProfilerState_init;/* Variable: PosProfilerState_init
-                                               * Referenced by: '<Root>/Data Store Memory5'
+extern PosProfilerData_T PosProfilerData_init;/* Variable: PosProfilerData_init
+                                               * Referenced by: '<Root>/Data Store Memory2'
                                                */
-extern PosProfilerData PosProfilerData_init;/* Variable: PosProfilerData_init
-                                             * Referenced by: '<Root>/Data Store Memory2'
+extern PosProfilerState_T PosProfilerState_init;/* Variable: PosProfilerState_init
+                                                 * Referenced by: '<Root>/Data Store Memory5'
+                                                 */
+extern SEALVerControl_T SEALVerControl_init;/* Variable: SEALVerControl_init
+                                             * Referenced by: '<Root>/Data Store Memory6'
                                              */
-extern SEALVerControl SEALVerControl_init;/* Variable: SEALVerControl_init
-                                           * Referenced by: '<Root>/Data Store Memory6'
-                                           */
+extern real_T KiSpeed;                 /* Variable: KiSpeed
+                                        * Referenced by: '<S1>/Gain2'
+                                        */
+extern real_T Kp;                      /* Variable: Kp
+                                        * Referenced by: '<S1>/Gain'
+                                        */
+extern real_T KpSpeed;                 /* Variable: KpSpeed
+                                        * Referenced by: '<S1>/Gain1'
+                                        */
 
 /*
  * Exported States
@@ -450,19 +495,26 @@ extern SEALVerControl SEALVerControl_init;/* Variable: SEALVerControl_init
  * states and exports their symbols.
  *
  */
-extern SEALVerControl G_SEALVerControl;/* '<Root>/Data Store Memory6' */
+extern UserInfo_T G_UserInfo;          /* '<Root>/Data Store Memory4' */
+extern SEALVerControl_T G_SEALVerControl;/* '<Root>/Data Store Memory6' */
 
 /* Model entry point functions */
 extern void Seal_initialize(void);
 
 /* Exported entry point function */
-extern void ISR100u(void);
+extern void ISR100uController(void);
+
+/* Exported entry point function */
+extern void ISR100uProfiler(void);
 
 /* Exported entry point function */
 extern void IdleLoopCAN(void);
 
 /* Exported entry point function */
 extern void IdleLoopUART(void);
+
+/* Exported entry point function */
+extern void SetupDrive(void);
 
 /*-
  * The generated code includes comments that allow you to trace directly
@@ -479,13 +531,16 @@ extern void IdleLoopUART(void);
  * Here is the system hierarchy for this model
  *
  * '<Root>' : 'Seal'
- * '<S1>'   : 'Seal/100usecPeriodic'
- * '<S2>'   : 'Seal/DocBlock'
- * '<S3>'   : 'Seal/Idle process CAN interpreter'
- * '<S4>'   : 'Seal/Idle process UART interpreter'
- * '<S5>'   : 'Seal/100usecPeriodic/MATLAB Function'
- * '<S6>'   : 'Seal/Idle process CAN interpreter/CAN message response'
- * '<S7>'   : 'Seal/Idle process UART interpreter/UART message response'
+ * '<S1>'   : 'Seal/100 usec Periodic controller'
+ * '<S2>'   : 'Seal/100 usec Periodic profiler'
+ * '<S3>'   : 'Seal/DocBlock'
+ * '<S4>'   : 'Seal/Drive configuration'
+ * '<S5>'   : 'Seal/Idle process CAN interpreter'
+ * '<S6>'   : 'Seal/Idle process UART interpreter'
+ * '<S7>'   : 'Seal/100 usec Periodic profiler/MATLAB Function'
+ * '<S8>'   : 'Seal/Drive configuration/MATLAB Function'
+ * '<S9>'   : 'Seal/Idle process CAN interpreter/CAN message response'
+ * '<S10>'  : 'Seal/Idle process UART interpreter/UART message response'
  */
 
 /*-

@@ -1,0 +1,16 @@
+{
+  "SimulinkCodeImporterVersion": 1,
+  "LibraryFileName": "Seal",
+  "OutputFolder": "C:\\Projects\\SEAL\\SealApp",
+  "CustomCode": {
+    "SourceFiles": ".\\SealMain.c",
+    "InterfaceHeaders": "CANServer.h",
+    "IncludePaths": ".\\ExternalCode",
+    "Language": "C",
+    "GlobalVariableInterface": false,
+    "FunctionArrayLayout": "NotSpecified"
+  },
+  "Options": {
+    "CreateTestHarness": false
+  }
+}

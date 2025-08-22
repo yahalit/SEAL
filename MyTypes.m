@@ -39,21 +39,10 @@ end
 assert(contains(class(dd),'Simulink.data.Dictionary'));
 assert(contains(class(cdict),'coder.Dictionary'));
 
-% 3) NOW you can access MemorySections
-% memSecs = getSection(cdict,'MemorySections');
-% % Create a new Memory Section entry (unique name of your choice)
-% entryName = 'TI_SEALDATA_SECT';
-% ms = addEntry(memSecs, entryName);
-% 
-% % Emit the TI pragmas. Use the variable-name token so the symbol name is substituted.
-% % (Token syntax accepted here is %<VariableName>.)
-% set ( ms,'PreStatement',[
-%     '#pragma DATA_SECTION(G_SEAL_Data, "TI_SEALDATA_SECT")' newline ...
-%     '#pragma DATA_ALIGN(G_SEAL_Data, 2)' ]) ;
-% set(ms,'PostStatement','');   % usually not needed
 
 % Generate the communication structures between SEAL and the hosting driver
 SEALSystemTypes(dd) ;
+DesignDataSection = getSection(dd,'Design Data');
 
 %% Generate data structures ( busses)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,8 +51,8 @@ SEALSystemTypes(dd) ;
 % 'double' 'single' ,'int8', 'uint8','int16', 'uint16','int32', 'uint32','boolean'
 % 2) Build the bus in code
 
-
-pelems(7,1) =Simulink.BusElement ;
+%% Define the profiler data
+pelems(8,1) =Simulink.BusElement ;
 pelems(1) = SetBusElement('PositionTarget','single',"Final position to arrive" ) ; 
 pelems(2) = SetBusElement('ProfileSpeed','single',"Maximum speed" ) ; 
 pelems(3) = SetBusElement('ProfileAcceleration','single',"Maximum Profile acceleration" ) ; 
@@ -71,29 +60,12 @@ pelems(4) = SetBusElement('ProfileDeceleration','single',"Maximum Profile decele
 pelems(5) = SetBusElement('ProfileFilterDen','double',"Filter monic polynomial for profile filtering",[4,1] ) ; 
 pelems(6) = SetBusElement('ProfileFilterNum','double',"Filter numerator for profile filtering",[1,1] ) ; 
 pelems(7) = SetBusElement('ProfileDataOk','uint16',"Flag that profiler data is consistent",[1,1] ) ; 
-PosProfilerData = Simulink.Bus;
-PosProfilerData.Elements = pelems;
+pelems(8) = SetBusElement('Ts','single',"Profiler sampling time " ) ;
+PosProfilerData_T = Simulink.Bus;
+PosProfilerData_T.Elements = pelems;
 
-
-ppelems(3,1) =Simulink.BusElement ;
-ppelems(1) = SetBusElement('Position','double',"Position state of profiler" ) ; 
-ppelems(2) = SetBusElement('Speed','double',"Speed state of profiler" ) ; 
-ppelems(3) = SetBusElement('FiltState','double',"State of profiling filter",[8,1] ) ; 
-PosProfilerState = Simulink.Bus;
-PosProfilerState.Elements = ppelems;
-
-
-% 3) Put the bus into the SLDD's Design Data section
-sec = getSection(dd,'Design Data');
-  
-assignin(sec,'PosProfilerData',PosProfilerData);     
-assignin(sec,'PosProfilerState',PosProfilerState);     
-
-
-%% Create example specific structs
-PosProfilerDataStructPrototype = Simulink.Bus.createMATLABStruct('PosProfilerData');
-PosProfilerStateStructPrototype = Simulink.Bus.createMATLABStruct('PosProfilerState');
-
+assignin(DesignDataSection,'PosProfilerData_T',PosProfilerData_T);     
+PosProfilerDataStructPrototype = Simulink.Bus.createMATLABStruct('PosProfilerData_T');
 PosProfilerDataStructPrototype.PositionTarget = 0 ; 
 PosProfilerDataStructPrototype.ProfileSpeed   = 1 ; 
 PosProfilerDataStructPrototype.ProfileAcceleration   = 1 ; 
@@ -103,29 +75,51 @@ PosProfilerDataStructPrototype.ProfileFilterNum   = 0.382310483172666 ;
 PosProfilerDataStructPrototype.ProfileDataOk = 0 ;
 
 PosProfilerData_init = Simulink.Parameter;
-PosProfilerData_init.DataType = 'Bus: PosProfilerData';
+PosProfilerData_init.DataType = 'Bus: PosProfilerData_T';
 PosProfilerData_init.Value     = PosProfilerDataStructPrototype ;
 PosProfilerData_init.StorageClass  = 'ExportedGlobal';
 
-assignin(sec,'PosProfilerData_init',PosProfilerData_init);    
+assignin(DesignDataSection,'PosProfilerData_init',PosProfilerData_init);    
 
+%% Define the profiler state 
+ppelems(3,1) =Simulink.BusElement ;
+ppelems(1) = SetBusElement('Position','double',"Position state of profiler" ) ; 
+ppelems(2) = SetBusElement('Speed','double',"Speed state of profiler" ) ; 
+ppelems(3) = SetBusElement('FiltState','double',"State of profiling filter",[4,1] ) ; 
+PosProfilerState_T = Simulink.Bus;
+PosProfilerState_T.Elements = ppelems;
+  
+assignin(DesignDataSection,'PosProfilerState_T',PosProfilerState_T);     
+PosProfilerStateStructPrototype = Simulink.Bus.createMATLABStruct('PosProfilerState_T');
 
 PosProfilerState_init = Simulink.Parameter;
-PosProfilerState_init.DataType = 'Bus: PosProfilerState';
+PosProfilerState_init.DataType = 'Bus: PosProfilerState_T';
 PosProfilerState_init.Value     = PosProfilerStateStructPrototype ;
 PosProfilerState_init.StorageClass  = 'ExportedGlobal';
 
-assignin(sec,'PosProfilerState_init',PosProfilerState_init);    
+assignin(DesignDataSection,'PosProfilerState_init',PosProfilerState_init);    
 
+%% Define parameters
+SetSealParameter(DesignDataSection,'Kp',5) ;
+SetSealParameter(DesignDataSection,'KpSpeed',5) ;
+SetSealParameter(DesignDataSection,'KiSpeed',5) ;
+
+
+%% Define some use info 
+uelems(3,1) =Simulink.BusElement ;
+uelems(1) = SetBusElement('VersionNumber','int32',"Version control number" ) ; 
+uelems(2) = SetBusElement('junk1','single',"Stam zbala" ) ; 
+uelems(3) = SetBusElement('junk2','int32',"Stam vector zbala",[4,1] ) ; 
+UserInfo_T = Simulink.Bus;
+UserInfo_T.Elements = uelems;
+  
+assignin(DesignDataSection,'UserInfo_T',UserInfo_T);     
+G_UserInfo = Simulink.Signal;
+G_UserInfo.StorageClass  = 'ExportedGlobal';
+
+G_UserInfo.DataType = "Bus: UserInfo_T" ;
+assignin(DesignDataSection,'G_UserInfo',G_UserInfo);   
 
 
 % 4) Save the dictionary and close all the open dictionaries
 saveChanges(dd);
-%Simulink.data.dictionary.closeAll(); 
-
-% Copy the new sldd to its use location
-% copyfile (SlddName,  fullfile(SlddDir,SlddName)) ; 
-
-% 5) Link your model to the dictionary (once)
-% set_param('MyModel','DataDictionary','MyModel.sldd');
-% save_system('MyModel');

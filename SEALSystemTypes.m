@@ -12,18 +12,18 @@ velems(3,1) =Simulink.BusElement ;
 velems(1) = SetBusElement('Version','uint16',"SEAL database version" ) ; 
 velems(2) = SetBusElement('SubVersion','uint16',"SEAL database sub version" ) ; 
 velems(3) = SetBusElement('UserData','uint32',"SEAL database support data" ) ; 
-VersionControlStruct = LogBusInSLDD(DataDictionary,  'SEALVerControl' , velems) ;
+VersionControlStruct = LogBusInSLDD(DataDictionary,  'SEALVerControl_T' , velems) ;
 
 VersionControlStruct.Version = 1 ; 
 VersionControlStruct.SubVersion = 1 ; 
 VersionControlStruct.UserData = 0 ; 
 SEALVerControl_init = Simulink.Parameter;
-SEALVerControl_init.DataType = 'Bus: SEALVerControl';
+SEALVerControl_init.DataType = 'Bus: SEALVerControl_T';
 SEALVerControl_init.Value     = VersionControlStruct ;
 SEALVerControl_init.StorageClass  = 'ExportedGlobal';
 
 assignin(dataSection,'SEALVerControl_init',SEALVerControl_init);    
-LogSignalInSLDD(dataSection, 'SEALVerControl' , 'G_SEALVerControl','ExportedGlobal' ) ; 
+LogSignalInSLDD(dataSection, 'SEALVerControl_T' , 'G_SEALVerControl','ExportedGlobal' ) ; 
 
 
 %% Define UART related interface 
@@ -36,12 +36,12 @@ elems(3) = SetBusElement('UartError','uint16',"UART error" ) ;
 elems(4) = SetBusElement('TxFetchCounter','uint16',"The location in the TX UARTQueue of the next character to read" ) ; 
 elems(5) = SetBusElement('UARTQueue','uint16',"Software Queue for incoming UART characters" ,[1 256]) ; 
 
-LogBusInSLDD(DataDictionary,  'UartCyclicBuf' , elems) ;
+LogBusInSLDD(DataDictionary,  'UartCyclicBuf_T' , elems) ;
 
 
 %% UART buffer signals
-LogSignalInSLDD(dataSection, 'UartCyclicBuf' , 'G_UartCyclicBuf_in') ; 
-LogSignalInSLDD(dataSection, 'UartCyclicBuf' , 'G_UartCyclicBuf_out') ; 
+LogSignalInSLDD(dataSection, 'UartCyclicBuf_T' , 'G_UartCyclicBuf_in') ; 
+LogSignalInSLDD(dataSection, 'UartCyclicBuf_T' , 'G_UartCyclicBuf_out') ; 
 
 %% Text interpreter
 telems(9,1) =Simulink.BusElement ;
@@ -55,8 +55,8 @@ telems(7) = SetBusElement('NewString','uint16',"Indicate a new string is availab
 telems(8) = SetBusElement('MnemonicIndex','uint16',"Mnemonic index" ) ; 
 telems(9) = SetBusElement('ArrayIndex','uint16',"Array index" ) ; 
 
-LogBusInSLDD(DataDictionary,  'MicroInterp' , telems) ;
-LogSignalInSLDD(dataSection, 'MicroInterp' , 'G_MicroInterp','ImportedExtern') ; 
+LogBusInSLDD(DataDictionary,  'MicroInterp_T' , telems) ;
+LogSignalInSLDD(dataSection, 'MicroInterp_T' , 'G_MicroInterp','ImportedExtern') ; 
 
 
 %% Define CAN interfaces 
@@ -71,12 +71,12 @@ celems(5) = SetBusElement('TxFetchCounter','uint16',"The location in the CANQueu
 celems(6) = SetBusElement('CANID','uint32',"Can ID, 11 or 29bit" ,[64,1]) ; 
 celems(7) = SetBusElement('DLenAndAttrib','uint16',"Data length and attributes" ,[64,1]) ; 
 
-LogBusInSLDD(DataDictionary,  'CANCyclicBuf' , celems) ;
+LogBusInSLDD(DataDictionary,  'CANCyclicBuf_T' , celems) ;
 
 
 %% CAN buffer signals
-LogSignalInSLDD(dataSection, 'CANCyclicBuf' , 'G_CANCyclicBuf_in') ; 
-LogSignalInSLDD(dataSection, 'CANCyclicBuf' , 'G_CANCyclicBuf_out') ; 
+LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_CANCyclicBuf_in') ; 
+LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_CANCyclicBuf_out') ; 
 
 
 %% System level reports 
@@ -103,12 +103,13 @@ suelems(16)  = SetBusElement('IsPosSensorModulo1','uint16',"Is Sensor modulo: 1"
 suelems(17)  = SetBusElement('IsPosSensorModulo2','uint16',"Is Sensor modulo: 2" ) ;
 suelems(18)  = SetBusElement('CANId11bit','uint16',"CAN ID 11bit" ) ;
 suelems(19)  = SetBusElement('Ts','single',"Profiler sampling time " ) ;
+suelems(20)  = SetBusElement('bConfirmControlUART','int16',"Confirms that the SEAL uses the UART and the drive should not interpret UART communication" ) ; 
 
-SetupReportBuf = Simulink.Bus;
-SetupReportBuf.Elements = suelems;
+SetupReportBuf_T = Simulink.Bus;
+SetupReportBuf_T.Elements = suelems;
 
-LogBusInSLDD(DataDictionary,  'SetupReportBuf' , suelems) ;
-LogSignalInSLDD(dataSection, 'SetupReportBuf' , 'G_SetupReportBuf') ; 
+LogBusInSLDD(DataDictionary,  'SetupReportBuf_T' , suelems) ;
+LogSignalInSLDD(dataSection, 'SetupReportBuf_T' , 'G_SetupReportBuf') ; 
 
 %% Command to the servo driver
 nCommandElements = 24 ; 
@@ -122,11 +123,15 @@ cselems(4)  = SetBusElement('LoopConfiguration','int16',"Control loop configurat
 cselems(5)  = SetBusElement('ReferenceMode','int16',"ReferenceMode" ) ; 
 cselems(6)  = SetBusElement('MotorOn','int16',"Motor on request" ) ; 
 cselems(7)  = SetBusElement('FailureReset','int16',"Failure Reset Request" ) ; 
-DrvCommandBuf = Simulink.Bus;
-DrvCommandBuf.Elements = cselems;
+cselems(8)  = SetBusElement('RelinquishControl','int16',"Release the drive from SEAL control" ) ; 
+cselems(9)  = SetBusElement('bControlUART','int16',"Flag that the SEAL uses the UART and the drive should not interpret UART communication" ) ; 
+cselems(10)  = SetBusElement('SealCanID_11','int16',"Seal 11 bit CAN ID" ) ; 
+cselems(11)  = SetBusElement('SealCanID_29','int16',"Seal 29 bit CAN ID" ) ; 
+DrvCommandBuf_T = Simulink.Bus;
+DrvCommandBuf_T.Elements = cselems;
 
-LogBusInSLDD(DataDictionary,  'DrvCommandBuf' , cselems) ;
-LogSignalInSLDD(dataSection, 'DrvCommandBuf' , 'G_DrvCommandBuf') ; 
+LogBusInSLDD(DataDictionary,  'DrvCommandBuf_T' , cselems) ;
+LogSignalInSLDD(dataSection, 'DrvCommandBuf_T' , 'G_DrvCommandBuf') ; 
 
 %% System level feedback bus
 nFeedbackElements = 24 ; 
@@ -149,10 +154,24 @@ felems(16)  = SetBusElement('HallCode','int16',"Code of Hall sensors" ) ;
 felems(17)  = SetBusElement('STODisable','int16',"1 if disabled by STO" ) ;
 felems(18)  = SetBusElement('StatusBitField','int16',"Status bit field" ) ;
 felems(19)  = SetBusElement('ErrorCode','uint32',"Motor failure report" ) ; 
+felems(10)  = SetBusElement('ConfirmRelinquishControl','int16',"Confirm Release the drive from SEAL control" ) ; 
 
-LogBusInSLDD(DataDictionary,  'FeedbackBuf' , felems) ;
-LogSignalInSLDD(dataSection, 'FeedbackBuf' , 'G_FeedbackBuf') ; 
+LogBusInSLDD(DataDictionary,  'FeedbackBuf_T' , felems) ;
+LogSignalInSLDD(dataSection, 'FeedbackBuf_T' , 'G_FeedbackBuf') ; 
 
+%% Enumerated type for data types
+et = Simulink.data.dictionary.EnumTypeDefinition;
+et.StorageType  = 'uint16';
+% Add members
+appendEnumeral(et,'T_int32',  0, 'long');
+appendEnumeral(et,'T_single',   2, 'float');
+appendEnumeral(et,'T_int16', 4, 'short');
+appendEnumeral(et,'T_uint32', 8, 'unsigned long');
+appendEnumeral(et,'T_uint16', 12, 'unsigned short');
+appendEnumeral(et,'T_double', 16, 'double');
+% Remove the default placeholder member ('enum1') that the object starts with
+removeEnumeral(et,1);
+addEntry(dataSection,'VarDataTypes', et);
 
 %% Finally save the changes
 saveChanges(DataDictionary);

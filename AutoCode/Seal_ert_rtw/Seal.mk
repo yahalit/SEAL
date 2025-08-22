@@ -2,7 +2,7 @@
 ## Makefile generated for component 'Seal'. 
 ## 
 ## Makefile     : Seal.mk
-## Generated on : Sun Aug 17 13:12:46 2025
+## Generated on : Tue Aug 19 11:48:59 2025
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)\Seal.exe
 ## Product type : executable
 ## 
@@ -185,7 +185,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS) $(DEFINES_STAN
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)\Seal_ert_rtw\Seal.c
+SRCS = $(START_DIR)\Seal_ert_rtw\Seal.c C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c
 
 MAIN_SRC = $(START_DIR)\Seal_ert_rtw\ert_main.c
 
@@ -195,7 +195,7 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = Seal.obj
+OBJS = Seal.obj CANServer.obj
 
 MAIN_OBJ = ert_main.obj
 
@@ -368,6 +368,22 @@ $(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(LIBS) $(MAIN_OBJ)
 	$(CPP) $(CPPFLAGS) -Fo"$@" "$<"
 
 
+{C:\Projects\SEAL\SealApp\ExternalCode}.c.obj:
+	$(CC) $(CFLAGS) -Fo"$@" "$<"
+
+
+{C:\Projects\SEAL\SealApp\ExternalCode}.cpp.obj:
+	$(CPP) $(CPPFLAGS) -Fo"$@" "$<"
+
+
+{C:\Projects\SEAL\SealApp\ExternalCode}.cc.obj:
+	$(CPP) $(CPPFLAGS) -Fo"$@" "$<"
+
+
+{C:\Projects\SEAL\SealApp\ExternalCode}.cxx.obj:
+	$(CPP) $(CPPFLAGS) -Fo"$@" "$<"
+
+
 {$(MATLAB_ROOT)\rtw\c\src}.c.obj:
 	$(CC) $(CFLAGS) -Fo"$@" "$<"
 
@@ -422,6 +438,10 @@ Seal.obj : "$(START_DIR)\Seal_ert_rtw\Seal.c"
 
 ert_main.obj : "$(START_DIR)\Seal_ert_rtw\ert_main.c"
 	$(CC) $(CFLAGS) -Fo"$@" "$(START_DIR)\Seal_ert_rtw\ert_main.c"
+
+
+CANServer.obj : C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c
+	$(CC) $(CFLAGS) -Fo"$@" C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c
 
 
 ###########################################################################
