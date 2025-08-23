@@ -1,5 +1,6 @@
-function [ints,idles,setups,exceptions,aborts] = scan_isr_idle(headerFile,BaseTs )
+function [errmsg,ints,idles,setups,exceptions,aborts] = scan_isr_idle(headerFile,BaseTs,modelname )
 
+errmsg = [] ; 
 typestr = struct('E_Func_Initializer',1,'E_Func_Idle',2,'E_Func_ISR',3,'E_Func_Setup',4,'E_FuncException',5,'E_FuncAbort',7) ; 
 
 txt = fileread(headerFile);
@@ -30,7 +31,8 @@ nidle = 0 ;
 nsetup = 0 ; 
 nexception = 0 ; 
 nabort = 0 ; 
-
+InitializeDetected = 0 ;
+ExpectedInitializeName = modelname+"_initialize" ; 
 for i = 1:m
     st = strtrim(stmts{i});
     if isempty(st) || ~startsWith(st,"extern") && isempty(regexp(st,'^\s*extern\b','once'))
@@ -51,13 +53,16 @@ for i = 1:m
     %     continue ; 
     % end
     % disp( stsplit) 
-    if isequal( stsplit{1} ,'extern' ) && isequal( stsplit{2} ,'void' ) && isequal( stsplit{4} ,'(void)' ) 
+    if numel(stsplit) >= 4 && isequal( stsplit{1} ,'extern' ) && isequal( stsplit{2} ,'void' ) && isequal( stsplit{4} ,'(void)' ) 
         name = stsplit{3} ; 
         if startsWith( upper(name) , 'ISR')  
-            if ( ~endsWith(name,'u')) || (length(name)<5 )
-                disp([st,' : Suspect wanabee ISR, will not be taken']) ; 
+            if ( ~contains(name,'u')) || (length(name)<5 )
+                errmsg = ([st,' : Suspect wanabee ISR, will not be taken']) ; 
+                return ; 
             else
-                TsChar = strrep( name(4:end-1),'_','.') ;
+                place = strfind(name,'u') ; 
+                place = place(1) ; 
+                TsChar = strrep( name(4:place-1),'_','.') ;
                 TsChar = strrep( TsChar,'p','.') ;
 
                 try
@@ -67,50 +72,64 @@ for i = 1:m
                 end
                 [nIntsOverBase,ok] = GetMultiple( Ts, BaseTs ) ; 
                 if ok == 0 
-                    disp([st,' : Suspect wanabee ISR, invalid sampling time, will not be taken']) ; 
+                    errmsg = ([st,' : Suspect wanabee ISR, invalid sampling time, will not be taken']) ; 
+                    return ; 
                 else
                     nint = nint + 1 ; 
                     if ( nint <= FuncArraySize )
                         ints(nint)  = struct('Func',name,'Ts',Ts,'nInts',nIntsOverBase,'Type',typestr.E_Func_ISR ,'Priority' , FuncArraySize+1 - nint)   ;  
                     else
-                        disp([st,' : Too many ISR routines (limit of 8)']) ; 
+                        errmsg = ([st,' : Too many ISR routines (limit of 8)']) ; 
+                        return ;
                     end
                 end 
             end
-        end 
-        if startsWith( upper(name) , 'IDLELOOP')  
+        elseif startsWith( upper(name) , 'IDLELOOP')  
             nidle = nidle + 1 ; 
             if ( nidle <= FuncArraySize )
                 idles(nidle)  = struct('Func',name ,'Type',typestr.E_Func_Idle, 'Ts', [],'nInts',[],'Priority' , FuncArraySize+1  - nidle)  ;
             else
-                disp([st,' : Too many Idle loop routines (limit of 8)']) ; 
+                errmsg = ([st,' : Too many Idle loop routines (limit of 8)']) ; 
+                return ; 
             end
-        end 
-        if startsWith( upper(name) , 'SETUP')  
+        elseif startsWith( upper(name) , 'SETUP')  
             nsetup = nsetup + 1 ; 
-            if ( nsetup <= FuncArraySize )
+            if ( nsetup <= 1 )
             setups(nsetup)  =  struct('Func',name,'Type',typestr.E_Func_Setup, 'Ts', [],'nInts',[],'Priority' , FuncArraySize+1  - nsetup )   ;
             else
-                disp([st,' : Too many setup loop routines (limit of 8)']) ; 
+                errmsg = ([st,' : Too many setup loop routines (limit of 8)']) ; 
+                return ; 
             end
-        end 
-        if startsWith( upper(name) , 'EXCEPTION')  
+        elseif startsWith( upper(name) , 'EXCEPTION')  
             nexception = nexception + 1 ; 
             if ( nexception <= FuncArraySize )
                 exceptions(nexception)  =  struct('Func',name ,'Type',typestr.E_FuncException, 'Ts', [],'nInts',[],'Priority' , FuncArraySize+1  - nexception)   ;
             else
-                disp([st,' : Too many exception routines (limit of 8)']) ; 
+                errmsg = ([st,' : Too many exception routines (limit of 8)']) ; 
+                return ;
             end
-        end 
-        if startsWith( upper(name) , 'ABORT')  
+        elseif startsWith( upper(name) , 'ABORT')  
             nabort = nabort + 1 ; 
             if ( nabort <= FuncArraySize )
                 aborts(nabort)  =  struct('Func',name,'Type',typestr.E_FuncAbort , 'Ts', [],'nInts',[],'Priority' , FuncArraySize+1  - nabort)   ;
             else
-                disp([st,' : Too many abort routines (limit of 8)']) ; 
+                errmsg = ([st,' : Too many abort routines (limit of 8)']) ; 
+                return ; 
+            end
+        else
+            if isequal( string(name),  ExpectedInitializeName) 
+                InitializeDetected = 1 ; 
+            else
+                errmsg = (st+" : Unidentified function for the seal.") ; 
+                return ;             
             end
         end 
     end
+
+end
+if ( InitializeDetected == 0 )
+    errmsg = (ExpectedInitializeName+" : Expected initializer not found.") ; 
+    return ;             
 end
 
 

@@ -1,6 +1,11 @@
-HwTarget = "C28";
+SealProjectDescriptor = struct('ModelName','Seal','BaseTs',50e-6,'HwTarget',"C28",'CodeGenFolder','AutoCode','RootDir',pwd,...
+    'TIRoot',"C:\Projects\SensorLess\Software\BECpu2\SEAL\Automatic",...
+    'SealTargetSourceFolder','C:\Projects\SensorLess\Software\BECpu2\SEAL\Automatic') ; 
+
+
+HwTarget = SealProjectDescriptor.HwTarget;
 % Set the directories to produce code 
-ModelName = 'Seal';                 % your model name (without .slx/.mdl)
+% SealProjectDescriptor.ModelName = 'Seal';                 % your model name (without .slx/.mdl)
 
 cfg = Simulink.fileGenControl('getConfig');
 
@@ -8,7 +13,7 @@ cfg = Simulink.fileGenControl('getConfig');
 % Change the parameters to non-default locations
 % for the cache and code generation folders
 cfg.CacheFolder = fullfile(pwd,'AutoCache');
-cfg.CodeGenFolder = fullfile(pwd,'AutoCode');
+cfg.CodeGenFolder = fullfile(pwd,CodeGenFolder.AutoCode);
 %cfg.CodeGenFolderStructure = 'TargetEnvironmentSubfolder';
 Simulink.fileGenControl('setConfig', 'config', cfg);
 
@@ -22,10 +27,10 @@ BigFloat = single(1e18) ;
 % Pre processing is defined in the source file ert_make_rtw_hook.m
 
 % Load model and install post processor
-if ~bdIsLoaded(ModelName)
-    load_system(ModelName);         % loads without opening
+if ~bdIsLoaded(SealProjectDescriptor.ModelName)
+    load_system(SealProjectDescriptor.ModelName);         % loads without opening
 end
-mdl = get_param(ModelName, 'Handle'); % numeric handle to the block diagram
+mdl = get_param(SealProjectDescriptor.ModelName, 'Handle'); % numeric handle to the block diagram
 
 %% Generate code for C2000
 ModelConfigurationSet  = getActiveConfigSet(mdl);

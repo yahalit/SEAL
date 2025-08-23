@@ -6,18 +6,43 @@
 % -Compile code block as TI 
 % - Store version data to compare with the drive
 
+% Package all coder products for target use
+PD = evalin('base','SealProjectDescriptor') ; % = struct('ModelName',ModelName,'HwTarget',"C28",'CodeGenFolder','AutoCode','RootDir',pwd) ; 
+
+targetFolder = fullfile(PD.RootDir,PD.CodeGenFolder + "\" + PD.ModelName + "_ert_rtw");
+cd(targetFolder);
+bi = load('buildInfo.mat');                         % gives you buildInfo
+buildInfo = bi.buildInfo ; 
+buildOpts = bi.buildOpts ; 
+templateMakefile = bi.templateMakefile ; 
+
+packNGo(buildInfo, ...
+    'fileName', [PD.ModelName '_deploy.zip'], ...
+    'packType','flat');                    % or 'hierarchical'
+
+% Back to work directory 
+cd(PD.RootDir); 
+
+% Set the files to the post proc folder 
+PostProcDir = fullfile(PD.RootDir,'PostProc') ;
+ClearFolderTree( PostProcDir) ; 
+ZipFile   = fullfile(PD.RootDir,"AutoCode\" + PD.ModelName + "_deploy.zip") ;
+CodeDir = fullfile(PD.RootDir,"AutoCode\" + "\Seal_ert_rtw");
+unzip(ZipFile, PostProcDir);
+% Deleta the main function 
+MainName = fullfile(PD.RootDir,"PostProc\ert_main.c") ; 
+delete(MainName) ; 
+
 % Prepare a wrapper for the SEAL project 
 CFile = "Seal.c"; 
 HFile = "Seal.h"; 
 EHFile = "ExternSeal.h"; 
 ECFile = "ExternSeal.c"; 
-CodeDir = evalin('base','cfg.CodeGenFolder') + "\Seal_ert_rtw";
-BaseTs  = 50e-6 ; 
 
-HFile= fullfile(CodeDir,HFile) ; 
-CFile= fullfile(CodeDir,CFile) ; 
-EHFile= fullfile(CodeDir,EHFile) ; 
-ECFile= fullfile(CodeDir,ECFile) ; 
+HFile= fullfile(PostProcDir,HFile) ; 
+CFile= fullfile(PostProcDir,CFile) ; 
+EHFile= fullfile(PostProcDir,EHFile) ; 
+ECFile= fullfile(PostProcDir,ECFile) ; 
 
 
 %% Look for all the variables defined in the h that have no declaration in the c
@@ -26,7 +51,13 @@ ECFile= fullfile(CodeDir,ECFile) ;
 U(Inda) = [] ; 
 V(Inda) = [] ; 
 
-[ints,idles,setups,exceptions,aborts] = scan_isr_idle(HFile,BaseTs) ;
+[errmsg,ints,idles,setups,exceptions,aborts] = scan_isr_idle(HFile,PD.BaseTs,PD.ModelName) ;
+
+if ~isempty(errmsg)
+    error(errmsg);
+else
+    displayDiscoveredEntities(ints,idles,setups,exceptions,aborts); 
+end
 
 lines = ["#ifndef EXTERN_SEAL_DEF_H"  ; ... 
          "#define EXTERN_SEAL_DEF_H"  ; ...
@@ -58,6 +89,11 @@ lines = [lines ; InitializeLines ;IdleLoopLines ; IsrLines ; SetupLines ; AbortL
 
 
 writelines(lines, EHFile);                 % overwrite or create
+
+% Pass the files to the target
+ClearFolderTree( PD.SealTargetSourceFolder) ; 
+copyfile(PostProcDir, PD.SealTargetSourceFolder, 'f');
+
 
 
 %% Write the C file 
