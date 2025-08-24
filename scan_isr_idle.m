@@ -66,9 +66,9 @@ for i = 1:m
                 TsChar = strrep( TsChar,'p','.') ;
 
                 try
-                    Ts = str2double(TsChar) ;
+                    Ts = str2double(TsChar) * 1e-6  ;
                 catch
-                    Ts = 0 ; 
+                    errmsg = ([st,' : Bad formatted sampling time ,ISR will not be taken']) ; 
                 end
                 [nIntsOverBase,ok] = GetMultiple( Ts, BaseTs ) ; 
                 if ok == 0 
@@ -127,6 +127,12 @@ for i = 1:m
     end
 
 end
+% If no setup function is defined, define an empty one 
+if ( nsetup == 0 )
+     nsetup = 1;
+     setups(nsetup)  =  struct('Func',SetupEmpty,'Type',typestr.E_Func_Setup, 'Ts', [],'nInts',[],'Priority' , FuncArraySize+1  - nsetup )   ;
+end
+
 if ( InitializeDetected == 0 )
     errmsg = (ExpectedInitializeName+" : Expected initializer not found.") ; 
     return ;             

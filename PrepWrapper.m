@@ -31,7 +31,15 @@ CodeDir = fullfile(PD.RootDir,"AutoCode\" + "\Seal_ert_rtw");
 unzip(ZipFile, PostProcDir);
 % Deleta the main function 
 MainName = fullfile(PD.RootDir,"PostProc\ert_main.c") ; 
+ExtCodeName = fullfile(PD.RootDir,PD.ExternalCodeFolder) ; 
+ExtEntries = dir(ExtCodeName);
+ExtEntries = ExtEntries(~ismember({ExtEntries.name}, {'.','..'}));
+for cnt = 1:numel(ExtEntries) 
+    next = fullfile(PostProcDir,ExtEntries(cnt).name);
+    delete( next ) ; 
+end
 delete(MainName) ; 
+delete(PostProcDir+"\*.mat") ; 
 
 % Prepare a wrapper for the SEAL project 
 CFile = "Seal.c"; 
@@ -59,33 +67,31 @@ else
     displayDiscoveredEntities(ints,idles,setups,exceptions,aborts); 
 end
 
-lines = ["#ifndef EXTERN_SEAL_DEF_H"  ; ... 
-         "#define EXTERN_SEAL_DEF_H"  ; ...
-         "typedef const short unsigned * bPtr" ; 
-         "const char unsigned GenesisVerse[] = ""In the beginning God created the heaven and the earth"";" ;  ...
-         "#pragma DATA_SECTION (GenesisVerse,.DS_GENESIS_VERSE)" ] ; 
+
+lines = ["#ifndef EXTERN_SEAL_DEF_H"  ;  
+         "#define EXTERN_SEAL_DEF_H"  ; 
+         "typedef const short unsigned * bPtr;";
+"void (*InitFunc)(void)=Seal_initialize;";
+"void (*SetupFunc)(void)="+setups(1).Func+";"];
 
 for cnt = 1:numel(U) 
     lines = [lines;U(cnt)+" "+V(cnt)+";" ] ; %#ok<*AGROW>
     % lines = [lines;"#pragma DATA_SECTION ("+U(cnt)+","+".DS_"+U(cnt)+")" ] ; 
 end
 
-InitializeLines = "(voidFunc) InitializeFuncs[8] = {(voidFunc)Seal_initialize,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL,(voidFunc)NULL}; " ;
 IdleLoopLines   = BuildFuncDeclare('IdleLoopFuncs',idles) ; 
 ExceptionLines = BuildFuncDeclare('ExceptionFuncs' , exceptions)  ;
 AbortLines = BuildFuncDeclare('AbortFuncs' , aborts)  ;
-SetupLines      = BuildFuncDeclare('SetupFuncs',setups) ; 
 IsrLines        = BuildFuncDeclare('IsrFuncs',ints) ; 
 
 
 
 
 lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf,(bPtr)&G_CANCyclicBuf_in,(bPtr)&G_CANCyclicBuf_out," + ...
-         "(bPtr)&G_UartCyclicBuf_in,(bPtr)&G_UartCyclicBuf_out,(bPtr)&G_SEALVerControl,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};" ;  ...
-         "#pragma DATA_SECTION (BufferPtrs,.DS_INTFC_PTRS)" ] ; 
+         "(bPtr)&G_UartCyclicBuf_in,(bPtr)&G_UartCyclicBuf_out,(bPtr)&G_SEALVerControl,0U,0U,0U,0U,0U,0U,0U,0U};"] ; 
          
 
-lines = [lines ; InitializeLines ;IdleLoopLines ; IsrLines ; SetupLines ; AbortLines ; ExceptionLines ; lptr ; "#endif"] ;  
+lines = [lines ; IdleLoopLines ; IsrLines  ; AbortLines ; ExceptionLines ; lptr ; "#endif"] ;  
 
 
 writelines(lines, EHFile);                 % overwrite or create
@@ -93,6 +99,10 @@ writelines(lines, EHFile);                 % overwrite or create
 % Pass the files to the target
 ClearFolderTree( PD.SealTargetSourceFolder) ; 
 copyfile(PostProcDir, PD.SealTargetSourceFolder, 'f');
+
+ExtCodeDir = fullfile(PD.RootDir,PD.ExternalCodeFolder) ;
+ClearFolderTree( PD.SealExtTargetSourceFolder) ; 
+copyfile(ExtCodeDir, PD.SealExtTargetSourceFolder, 'f');
 
 
 
