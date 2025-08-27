@@ -1,6 +1,7 @@
 SealProjectDescriptor = struct('ModelName','Seal','BaseTs',50e-6,'HwTarget',"C28",...
     'RootDir',pwd,...
     'CodeGenFolder','AutoCode',...
+    'CodeGenCache','AutoCache',...
     'ExternalCodeFolder','ExternalCode',...
     'TIRoot',"C:\Projects\SensorLess\Software\BECpu2Seal\SEAL") ; 
 SealProjectDescriptor.SealTargetSourceFolder = SealProjectDescriptor.TIRoot + "\Automatic"; 
@@ -16,8 +17,8 @@ cfg = Simulink.fileGenControl('getConfig');
 %% Setup work directories
 % Change the parameters to non-default locations
 % for the cache and code generation folders
-cfg.CacheFolder = fullfile(pwd,'AutoCache');
-cfg.CodeGenFolder = fullfile(pwd,CodeGenFolder.AutoCode);
+cfg.CacheFolder = fullfile(pwd,SealProjectDescriptor.CodeGenCache);
+cfg.CodeGenFolder = fullfile(pwd,SealProjectDescriptor.CodeGenFolder);
 %cfg.CodeGenFolderStructure = 'TargetEnvironmentSubfolder';
 Simulink.fileGenControl('setConfig', 'config', cfg);
 

@@ -9,6 +9,8 @@
 % Package all coder products for target use
 PD = evalin('base','SealProjectDescriptor') ; % = struct('ModelName',ModelName,'HwTarget',"C28",'CodeGenFolder','AutoCode','RootDir',pwd) ; 
 
+StartFolder = pwd ; 
+
 targetFolder = fullfile(PD.RootDir,PD.CodeGenFolder + "\" + PD.ModelName + "_ert_rtw");
 cd(targetFolder);
 bi = load('buildInfo.mat');                         % gives you buildInfo
@@ -21,7 +23,7 @@ packNGo(buildInfo, ...
     'packType','flat');                    % or 'hierarchical'
 
 % Back to work directory 
-cd(PD.RootDir); 
+cd(StartFolder) ; % PD.RootDir); 
 
 % Set the files to the post proc folder 
 PostProcDir = fullfile(PD.RootDir,'PostProc') ;

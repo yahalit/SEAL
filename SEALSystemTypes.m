@@ -66,7 +66,7 @@ celems(7,1) =Simulink.BusElement ;
 celems(1) = SetBusElement('PutCounter','uint16',"The place in the CANQueue where the next message is to be put" ) ; 
 celems(2) = SetBusElement('FetchCounter','uint16',"The location in the CANQueue of the next message to read" ) ; 
 celems(3) = SetBusElement('CANError','uint16',"CAN error" ) ; 
-celems(4) = SetBusElement('CANQueue','uint32',"Software Queue for incoming CAN messages" ,[128,2]) ; 
+celems(4) = SetBusElement('CANQueue','uint32',"Software Queue for incoming CAN messages" ,[128,1]) ; 
 celems(5) = SetBusElement('TxFetchCounter','uint16',"The location in the CANQueue of the next message to transmit" ) ; 
 celems(6) = SetBusElement('CANID','uint32',"Can ID, 11 or 29bit" ,[64,1]) ; 
 celems(7) = SetBusElement('DLenAndAttrib','uint16',"Data length and attributes" ,[64,1]) ; 
@@ -78,12 +78,33 @@ LogBusInSLDD(DataDictionary,  'CANCyclicBuf_T' , celems) ;
 LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_CANCyclicBuf_in') ; 
 LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_CANCyclicBuf_out') ; 
 
+%% Can message
+cmelems(4,1) =Simulink.BusElement ;
+cmelems(1) = SetBusElement('CANID','uint32',"ID of the CAN message" ) ; 
+cmelems(2) = SetBusElement('DataLen','uint16',"Data length of the CAN message" ) ; 
+cmelems(3) = SetBusElement('MsgData','uint32',"Data for incoming CAN messages" ,[1,2]) ; 
+cmelems(4) = SetBusElement('CANTxCnt','uint16',"Number TX requests including this message" ) ; 
+CANMessage_Struct =  LogBusInSLDD(DataDictionary,  'CANMessage_T' , cmelems) ;
+
+CANMessage_Struct.CANID = 0 ; 
+CANMessage_Struct.DataLen = 0 ; 
+CANMessage_Struct.MsgData = [0,0] ; 
+CANMessage_Struct.CANTxCnt = 0 ; 
+
+CANMessage_Init = Simulink.Parameter;
+CANMessage_Init.DataType = 'Bus: CANMessage_T';
+CANMessage_Init.Value     = CANMessage_Struct ;
+CANMessage_Init.StorageClass  = 'ExportedGlobal';
+
+assignin(dataSection,'CANMessage_Init',CANMessage_Init);    
+
+
 
 %% System level reports 
 nSetupElements = 24 ; 
 suelems(nSetupElements,1) =Simulink.BusElement ;
 
-for cnt = 1:nSetupElements , suelems(cnt) = SetBusElement(['Spare_',num2str(cnt)],'int32',"Spare : " + num2str(cnt)  ) ; end 
+for cnt = 1:nSetupElements , suelems(cnt) = SetBusElement(['Spare_',num2str(cnt)],'int16',"Spare : " + num2str(cnt)  ) ; end 
 suelems(1)  = SetBusElement('MaximumPositionReference','double',"Maximum position referece" ) ;
 suelems(2)  = SetBusElement('MinimumPositionReference','double',"Minimum position reference" ) ;
 suelems(3)  = SetBusElement('HighPositionException','double',"High position value that causes an exception " ) ;
@@ -114,7 +135,7 @@ LogSignalInSLDD(dataSection, 'SetupReportBuf_T' , 'G_SetupReportBuf') ;
 %% Command to the servo driver
 nCommandElements = 24 ; 
 cselems(nCommandElements,1) =Simulink.BusElement ;
-for cnt = 1:nCommandElements , cselems(cnt) = SetBusElement(['Spare_',num2str(cnt)],'int32',"Spare : " + num2str(cnt)  ) ; end 
+for cnt = 1:nCommandElements , cselems(cnt) = SetBusElement(['Spare_',num2str(cnt)],'int16',"Spare : " + num2str(cnt)  ) ; end 
 
 cselems(1)  = SetBusElement('PositionCommand','double',"Command to position controller" ) ; 
 cselems(2)  = SetBusElement('SpeedCommand','double',"Command to speed controller" ) ; 
@@ -136,25 +157,26 @@ LogSignalInSLDD(dataSection, 'DrvCommandBuf_T' , 'G_DrvCommandBuf') ;
 %% System level feedback bus
 nFeedbackElements = 24 ; 
 felems(nFeedbackElements,1) =Simulink.BusElement ;
-for cnt = 1:nFeedbackElements , felems(cnt) = SetBusElement(['Spare_',num2str(cnt)],'int32',"Spare : " + num2str(cnt)  ) ; end 
+for cnt = 1:nFeedbackElements , felems(cnt) = SetBusElement(['Spare_',num2str(cnt)],'int16',"Spare : " + num2str(cnt)  ) ; end 
 
-felems(1)  = SetBusElement('EncoderMain','int32',"The main encoder sensor" ) ; 
-felems(2)  = SetBusElement('EncoderSecondary','int32',"The secondary encoder sensor" ) ; 
-felems(3)  = SetBusElement('EncoderMainSpeed','single',"Speed of main encoder sensor" ) ; 
-felems(4)  = SetBusElement('EncoderSecondarySpeed','single',"Speed of secondary encoder sensor" ) ; 
-felems(5)  = SetBusElement('Iq','single',"Q-channel current Amp" ) ; 
-felems(6)  = SetBusElement('Id','single',"Q-channel current Amp" ) ; 
-felems(7)  = SetBusElement('DcBusVoltage','single',"DC bus voltage V" ) ; 
-felems(8)  = SetBusElement('PowerStageTemperature','single',"Power stage temperature C" ) ;
-felems(9)  = SetBusElement('FieldAngle','single',"Motor electrical field angle" ) ;
+felems(1)  = SetBusElement('SystemTime','double',"Time counted from process start" ) ; 
+felems(2)  = SetBusElement('EncoderMain','int32',"The main encoder sensor" ) ; 
+felems(3)  = SetBusElement('EncoderSecondary','int32',"The secondary encoder sensor" ) ; 
+felems(4)  = SetBusElement('EncoderMainSpeed','single',"Speed of main encoder sensor" ) ; 
+felems(5)  = SetBusElement('EncoderSecondarySpeed','single',"Speed of secondary encoder sensor" ) ; 
+felems(6)  = SetBusElement('Iq','single',"Q-channel current Amp" ) ; 
+felems(7)  = SetBusElement('Id','single',"Q-channel current Amp" ) ; 
+felems(9)  = SetBusElement('DcBusVoltage','single',"DC bus voltage V" ) ; 
+felems(10)  = SetBusElement('PowerStageTemperature','single',"Power stage temperature C" ) ;
+felems(11)  = SetBusElement('FieldAngle','single',"Motor electrical field angle" ) ;
+felems(12)  = SetBusElement('ErrorCode','uint32',"Motor failure report" ) ; 
 felems(13)  = SetBusElement('LoopConfiguration','int16',"Control loop configuration" ) ; 
 felems(14)  = SetBusElement('ReferenceMode','int16',"ReferenceMode" ) ; 
 felems(15)  = SetBusElement('MotorOn','int16',"Motor on report" ) ; 
 felems(16)  = SetBusElement('HallCode','int16',"Code of Hall sensors" ) ; 
 felems(17)  = SetBusElement('STODisable','int16',"1 if disabled by STO" ) ;
 felems(18)  = SetBusElement('StatusBitField','int16',"Status bit field" ) ;
-felems(19)  = SetBusElement('ErrorCode','uint32',"Motor failure report" ) ; 
-felems(10)  = SetBusElement('ConfirmRelinquishControl','int16',"Confirm Release the drive from SEAL control" ) ; 
+felems(19)  = SetBusElement('ConfirmRelinquishControl','int16',"Confirm Release the drive from SEAL control" ) ; 
 
 LogBusInSLDD(DataDictionary,  'FeedbackBuf_T' , felems) ;
 LogSignalInSLDD(dataSection, 'FeedbackBuf_T' , 'G_FeedbackBuf') ; 

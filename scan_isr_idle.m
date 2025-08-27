@@ -32,7 +32,10 @@ nsetup = 0 ;
 nexception = 0 ; 
 nabort = 0 ; 
 InitializeDetected = 0 ;
-ExpectedInitializeName = modelname+"_initialize" ; 
+UpdateEventDetected = 0 ; 
+ExpectedInitializeName = modelname+"_initialize" ;
+ExpectedUpdateEventSet = 'EnvSet';
+
 for i = 1:m
     st = strtrim(stmts{i});
     if isempty(st) || ~startsWith(st,"extern") && isempty(regexp(st,'^\s*extern\b','once'))
@@ -119,6 +122,9 @@ for i = 1:m
         else
             if isequal( string(name),  ExpectedInitializeName) 
                 InitializeDetected = 1 ; 
+            elseif isequal( string(name), ExpectedUpdateEventSet )
+                UpdateEventDetected = 1 ;     
+            elseif any(strcmp(  string(name),  {'UartAddChar','UartGetChar','CanGetTxMsg','CanSetRxMsg'})) 
             else
                 errmsg = (st+" : Unidentified function for the seal.") ; 
                 return ;             
@@ -138,6 +144,9 @@ if ( InitializeDetected == 0 )
     return ;             
 end
 
+if ( UpdateEventDetected == 0  )
+    disp('Warning: External update event (for harness model) is missing') ; 
+end
 
 % Fix the priority of interrupt services 
 %if nint 
