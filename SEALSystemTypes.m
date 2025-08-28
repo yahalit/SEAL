@@ -40,8 +40,8 @@ LogBusInSLDD(DataDictionary,  'UartCyclicBuf_T' , elems) ;
 
 
 %% UART buffer signals
-LogSignalInSLDD(dataSection, 'UartCyclicBuf_T' , 'G_UartCyclicBuf_in') ; 
-LogSignalInSLDD(dataSection, 'UartCyclicBuf_T' , 'G_UartCyclicBuf_out') ; 
+LogSignalInSLDD(dataSection, 'UartCyclicBuf_T' , 'G_pUartCyclicBuf_in','ImportedExternPointer') ; 
+LogSignalInSLDD(dataSection, 'UartCyclicBuf_T' , 'G_pUartCyclicBuf_out','ImportedExternPointer') ; 
 
 %% Text interpreter
 telems(9,1) =Simulink.BusElement ;
@@ -75,8 +75,8 @@ LogBusInSLDD(DataDictionary,  'CANCyclicBuf_T' , celems) ;
 
 
 %% CAN buffer signals
-LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_CANCyclicBuf_in') ; 
-LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_CANCyclicBuf_out') ; 
+LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_pCANCyclicBuf_in','ImportedExternPointer') ; 
+LogSignalInSLDD(dataSection, 'CANCyclicBuf_T' , 'G_pCANCyclicBuf_out','ImportedExternPointer') ; 
 
 %% Can message
 cmelems(4,1) =Simulink.BusElement ;
@@ -122,7 +122,7 @@ suelems(14)  = SetBusElement('UARTBaudRate','uint32',"Baud rate of UART" ) ;
 suelems(15)  = SetBusElement('CANBaudRate','uint32',"Baud rate of CAN" ) ;
 suelems(16)  = SetBusElement('IsPosSensorModulo1','uint16',"Is Sensor modulo: 1" ) ;
 suelems(17)  = SetBusElement('IsPosSensorModulo2','uint16',"Is Sensor modulo: 2" ) ;
-suelems(18)  = SetBusElement('CANId11bit','uint16',"CAN ID 11bit" ) ;
+suelems(18)  = SetBusElement('CANId11bit','uint16',"CAN ID 11bit of the drive itself" ) ;
 suelems(19)  = SetBusElement('Ts','single',"Profiler sampling time " ) ;
 suelems(20)  = SetBusElement('bConfirmControlUART','int16',"Confirms that the SEAL uses the UART and the drive should not interpret UART communication" ) ; 
 
@@ -140,14 +140,12 @@ for cnt = 1:nCommandElements , cselems(cnt) = SetBusElement(['Spare_',num2str(cn
 cselems(1)  = SetBusElement('PositionCommand','double',"Command to position controller" ) ; 
 cselems(2)  = SetBusElement('SpeedCommand','double',"Command to speed controller" ) ; 
 cselems(3)  = SetBusElement('CurrentCommand','double',"Command to current controller" ) ; 
-cselems(4)  = SetBusElement('LoopConfiguration','int16',"Control loop configuration" ) ; 
-cselems(5)  = SetBusElement('ReferenceMode','int16',"ReferenceMode" ) ; 
+cselems(4)  = SetBusElement('LoopConfiguration','int16',"Control loop configuration: see enumerated type VarFeedbackMode" ) ; 
+cselems(5)  = SetBusElement('ReferenceMode','int16',"ReferenceMode: see enumerated type VarReferenceModes" ) ; 
 cselems(6)  = SetBusElement('MotorOn','int16',"Motor on request" ) ; 
 cselems(7)  = SetBusElement('FailureReset','int16',"Failure Reset Request" ) ; 
 cselems(8)  = SetBusElement('bSetSealControl','int16',"Oblige the drive from SEAL control" ) ; 
 cselems(9)  = SetBusElement('bControlUART','int16',"Flag that the SEAL uses the UART and the drive should not interpret UART communication" ) ; 
-cselems(10)  = SetBusElement('SealCanID_11','int16',"Seal 11 bit CAN ID" ) ; 
-cselems(11)  = SetBusElement('SealCanID_29','int16',"Seal 29 bit CAN ID" ) ; 
 DrvCommandBuf_T = Simulink.Bus;
 DrvCommandBuf_T.Elements = cselems;
 
@@ -177,9 +175,37 @@ felems(16)  = SetBusElement('HallCode','int16',"Code of Hall sensors" ) ;
 felems(17)  = SetBusElement('STODisable','int16',"1 if disabled by STO" ) ;
 felems(18)  = SetBusElement('StatusBitField','int16',"Status bit field" ) ;
 felems(19)  = SetBusElement('ConfirmRelinquishControl','int16',"Confirm Release the drive from SEAL control" ) ; 
+felems(20)  = SetBusElement('ProfiledPositionCommand','double',"Drive-sourecd Command to position controller" ) ; 
+felems(21)  = SetBusElement('ProfiledSpeedCommand','double',"Drive sources Command to speed controller" ) ; 
+felems(22)  = SetBusElement('ProfiledTorqueCommand','double',"Drive sources Command to current controller" ) ; 
 
 LogBusInSLDD(DataDictionary,  'FeedbackBuf_T' , felems) ;
 LogSignalInSLDD(dataSection, 'FeedbackBuf_T' , 'G_FeedbackBuf') ; 
+
+%% Enumerated type for reference modes
+et = Simulink.data.dictionary.EnumTypeDefinition;
+et.StorageType  = 'uint16';
+% Add members
+appendEnumeral(et,'T_StayInPlace',  0, 'Reference values do not change, or come to complete stop ASAP');
+appendEnumeral(et,'T_ProfiledSpeed',   1, 'Converge a desired speed. Position commands if applicable are automated to match the speed');
+appendEnumeral(et,'T_ProfiledPosition', 2, 'Converge to a desired position subject to speed and current limits');
+appendEnumeral(et,'T_Continuous', 3, 'Reference values are continuously calculated by SEAL');
+appendEnumeral(et,'T_InDriveProfiler', 4, 'Reference is generated internally by the drive');
+% Remove the default placeholder member ('enum1') that the object starts with
+removeEnumeral(et,1);
+addEntry(dataSection,'VarReferenceModes', et);
+
+%% Enumerated type for feedback modes 
+et = Simulink.data.dictionary.EnumTypeDefinition;
+et.StorageType  = 'uint16';
+% Add members
+appendEnumeral(et,'T_Current',  0, 'Current (torque) control only');
+appendEnumeral(et,'T_Speed',   1, 'Speed control, cascaded over current control');
+appendEnumeral(et,'T_Position', 2, 'Position control cascaded over Speed control, cascaded over current control');
+% Remove the default placeholder member ('enum1') that the object starts with
+removeEnumeral(et,1);
+addEntry(dataSection,'VarFeedbackMode', et);
+
 
 %% Enumerated type for data types
 et = Simulink.data.dictionary.EnumTypeDefinition;

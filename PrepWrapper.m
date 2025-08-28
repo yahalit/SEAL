@@ -89,8 +89,8 @@ IsrLines        = BuildFuncDeclare('IsrFuncs',ints) ;
 
 
 
-lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf,(bPtr)&G_CANCyclicBuf_in,(bPtr)&G_CANCyclicBuf_out," + ...
-         "(bPtr)&G_UartCyclicBuf_in,(bPtr)&G_UartCyclicBuf_out,(bPtr)&G_SEALVerControl,0U,0U,0U,0U,0U,0U,0U,0U};"] ; 
+lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf,(bPtr)&G_pCANCyclicBuf_in,(bPtr)&G_pCANCyclicBuf_out," + ...
+         "(bPtr)&G_pUartCyclicBuf_in,(bPtr)&G_pUartCyclicBuf_out,(bPtr)&G_SEALVerControl,0U,0U,0U,0U,0U,0U,0U,0U};"] ; 
          
 
 lines = [lines ; IdleLoopLines ; IsrLines  ; AbortLines ; ExceptionLines ; lptr ; "#endif"] ;  
