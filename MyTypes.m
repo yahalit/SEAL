@@ -106,19 +106,30 @@ SetSealParameter(DesignDataSection,'KiSpeed',5) ;
 
 
 %% Define some use info 
-uelems(3,1) =Simulink.BusElement ;
+uelems(5,1) =Simulink.BusElement ;
 uelems(1) = SetBusElement('VersionNumber','int32',"Version control number" ) ; 
-uelems(2) = SetBusElement('junk1','single',"Stam zbala" ) ; 
-uelems(3) = SetBusElement('junk2','int32',"Stam vector zbala",[4,1] ) ; 
+uelems(2) = SetBusElement('bUseUart','uint16',"1: Request control of UART" ) ; 
+uelems(3) = SetBusElement('bUartBaudRate','int32',"Baud rate of UART (if bUseUart)" ) ; 
+uelems(4) = SetBusElement('CanID','int32',"CAN IDs used locally by CAN",[1,4] ) ; 
+uelems(5) = SetBusElement('CanIDMask','int32',"CAN ID masks used locally by CAN",[1,4] ) ; 
 UserInfo_T = Simulink.Bus;
 UserInfo_T.Elements = uelems;
-  
-assignin(DesignDataSection,'UserInfo_T',UserInfo_T);     
-G_UserInfo = Simulink.Signal;
-G_UserInfo.StorageClass  = 'ExportedGlobal';
+assignin(DesignDataSection,'UserInfo_T',UserInfo_T); 
 
-G_UserInfo.DataType = "Bus: UserInfo_T" ;
-assignin(DesignDataSection,'G_UserInfo',G_UserInfo);   
+G_UserInfo_initV = Simulink.Bus.createMATLABStruct('UserInfo_T');
+G_UserInfo_initV.VersionNumber = 1 ; 
+G_UserInfo_initV.bUseUart = 1 ; 
+G_UserInfo_initV.bUartBaudRate = 230400 ; 
+G_UserInfo_initV.CanID = [ 1000 , 2000 , 0 , 0 ];
+G_UserInfo_initV.CanIDMask = [ 0 , 0 , 0 , 0 ];
+
+G_UserInfo_init = Simulink.Parameter;
+G_UserInfo_init.Value = G_UserInfo_initV ; 
+G_UserInfo_init.StorageClass  = 'ExportedGlobal';
+G_UserInfo_init.DataType = "Bus: UserInfo_T" ;
+
+
+assignin(DesignDataSection,'G_UserInfo',G_UserInfo_init);   
 
 
 % 4) Save the dictionary and close all the open dictionaries

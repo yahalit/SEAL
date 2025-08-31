@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.71
+ * Model version                  : 11.121
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Thu Aug 21 09:41:15 2025
+ * C/C++ source code generated on : Fri Aug 29 14:01:44 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -76,6 +76,66 @@ void sample_usage_SetupDrive(void)
 
   /* Call to exported function */
   SetupDrive();
+
+  /* Read function outputs here */
+}
+
+/* Example use case for call to exported function: EnvSet */
+extern void sample_usage_EnvSet(void);
+void sample_usage_EnvSet(void)
+{
+  /* Set task inputs here */
+
+  /* Call to exported function */
+  EnvSet();
+
+  /* Read function outputs here */
+}
+
+/* Example use case for call to exported function: UartAddChar */
+extern void sample_usage_UartAddChar(void);
+void sample_usage_UartAddChar(void)
+{
+  /* Set task inputs here */
+
+  /* Call to exported function */
+  UartAddChar();
+
+  /* Read function outputs here */
+}
+
+/* Example use case for call to exported function: UartGetChar */
+extern void sample_usage_UartGetChar(void);
+void sample_usage_UartGetChar(void)
+{
+  /* Set task inputs here */
+
+  /* Call to exported function */
+  UartGetChar();
+
+  /* Read function outputs here */
+}
+
+/* Example use case for call to exported function: CanGetTxMsg */
+extern void sample_usage_CanGetTxMsg(void);
+void sample_usage_CanGetTxMsg(void)
+{
+  /* Set task inputs here */
+
+  /* Call to exported function */
+  CanGetTxMsg();
+
+  /* Read function outputs here */
+}
+
+/* Example use case for call to exported function: CanSetRxMsg */
+extern void sample_usage_CanSetRxMsg(void);
+void sample_usage_CanSetRxMsg(void)
+{
+  /* Set task inputs here */
+
+  /* Call to exported function */
+  CanSetRxMsg();
 
   /* Read function outputs here */
 }
