@@ -31,8 +31,12 @@ ClearFolderTree( PostProcDir) ;
 ZipFile   = fullfile(PD.RootDir,"AutoCode\" + PD.ModelName + "_deploy.zip") ;
 CodeDir = fullfile(PD.RootDir,"AutoCode\" + "\Seal_ert_rtw");
 unzip(ZipFile, PostProcDir);
-% Deleta the main function 
+% Delete the main function 
 MainName = fullfile(PD.RootDir,"PostProc\ert_main.c") ; 
+delete(MainName) ; 
+
+% Function from the "External Code" directory have ready implementation in the external code directory
+% They are not to be copied to the target directory
 ExtCodeName = fullfile(PD.RootDir,PD.ExternalCodeFolder) ; 
 ExtEntries = dir(ExtCodeName);
 ExtEntries = ExtEntries(~ismember({ExtEntries.name}, {'.','..'}));
@@ -40,7 +44,6 @@ for cnt = 1:numel(ExtEntries)
     next = fullfile(PostProcDir,ExtEntries(cnt).name);
     delete( next ) ; 
 end
-delete(MainName) ; 
 delete(PostProcDir+"\*.mat") ; 
 
 % Prepare a wrapper for the SEAL project 
@@ -72,6 +75,7 @@ end
 
 lines = ["#ifndef EXTERN_SEAL_DEF_H"  ;  
          "#define EXTERN_SEAL_DEF_H"  ; 
+         "#include ""..\DeviceSetup.h""";
          "typedef const short unsigned * bPtr;";
 "void (*InitFunc)(void)=Seal_initialize;";
 "void (*SetupFunc)(void)="+setups(1).Func+";"];
@@ -89,8 +93,9 @@ IsrLines        = BuildFuncDeclare('IsrFuncs',ints) ;
 
 
 
-lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf,(bPtr)&G_pCANCyclicBuf_in,(bPtr)&G_pCANCyclicBuf_out," + ...
-         "(bPtr)&G_pUartCyclicBuf_in,(bPtr)&G_pUartCyclicBuf_out,(bPtr)&G_SEALVerControl,0U,0U,0U,0U,0U,0U,0U,0U};"] ; 
+lptr =  ["const short unsigned * BufferPtrs[16] = {(bPtr)&G_DrvCommandBuf,(bPtr)&G_FeedbackBuf,(bPtr)&G_SetupReportBuf," + ...
+    "(bPtr)&G_pCANCyclicBuf_in,(bPtr)&G_pCANCyclicBuf_out," + ...
+         "(bPtr)&G_pUartCyclicBuf_in,(bPtr)&G_pUartCyclicBuf_out,(bPtr)&G_SEALVerControl,(bPtr)&G_DeviceSetup,0U,0U,0U,0U,0U,0U,0U};"] ; 
          
 
 lines = [lines ; IdleLoopLines ; IsrLines  ; AbortLines ; ExceptionLines ; lptr ; "#endif"] ;  

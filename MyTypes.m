@@ -105,13 +105,19 @@ SetSealParameter(DesignDataSection,'KpSpeed',5) ;
 SetSealParameter(DesignDataSection,'KiSpeed',5) ;
 
 
-%% Define some use info 
-uelems(5,1) =Simulink.BusElement ;
+%% Define some use info
+% Define any CAN filters you wish to use 
+% Mask is 1 if bit is not checked
+% Unused filters and IDs shuld be set to UnusedCanFiller
+UnusedCanFiller = 2^31 - 1 ; 
+uelems(7,1) =Simulink.BusElement ;
 uelems(1) = SetBusElement('VersionNumber','int32',"Version control number" ) ; 
 uelems(2) = SetBusElement('bUseUart','uint16',"1: Request control of UART" ) ; 
-uelems(3) = SetBusElement('bUartBaudRate','int32',"Baud rate of UART (if bUseUart)" ) ; 
-uelems(4) = SetBusElement('CanID','int32',"CAN IDs used locally by CAN",[1,4] ) ; 
-uelems(5) = SetBusElement('CanIDMask','int32',"CAN ID masks used locally by CAN",[1,4] ) ; 
+uelems(3) = SetBusElement('bUartBaudRate','uint32',"Baud rate of UART (if bUseUart)" ) ; 
+uelems(4) = SetBusElement('CanID','uint32',"CAN IDs used locally by CAN",[1,4] ) ; 
+uelems(5) = SetBusElement('CanIDMask','uint32',"CAN ID masks used locally by CAN",[1,4] ) ; 
+uelems(6) = SetBusElement('ExtCanID','uint32',"CAN IDs used locally by CAN",[1,4] ) ; 
+uelems(7) = SetBusElement('ExtCanIDMask','uint32',"CAN ID masks used locally by CAN",[1,4] ) ; 
 UserInfo_T = Simulink.Bus;
 UserInfo_T.Elements = uelems;
 assignin(DesignDataSection,'UserInfo_T',UserInfo_T); 
@@ -119,9 +125,11 @@ assignin(DesignDataSection,'UserInfo_T',UserInfo_T);
 G_UserInfo_initV = Simulink.Bus.createMATLABStruct('UserInfo_T');
 G_UserInfo_initV.VersionNumber = 1 ; 
 G_UserInfo_initV.bUseUart = 1 ; 
-G_UserInfo_initV.bUartBaudRate = 230400 ; 
-G_UserInfo_initV.CanID = [ 1000 , 2000 , 0 , 0 ];
-G_UserInfo_initV.CanIDMask = [ 0 , 0 , 0 , 0 ];
+G_UserInfo_initV.UartBaudRate = 230400 ; 
+G_UserInfo_initV.CanID = [ 1000 , 2000 , UnusedCanFiller , UnusedCanFiller ];
+G_UserInfo_initV.CanIDMask = [ 0 , 0 , UnusedCanFiller , UnusedCanFiller ];
+G_UserInfo_initV.ExtCanID = [ 1000 , 2000 , UnusedCanFiller , UnusedCanFiller ];
+G_UserInfo_initV.ExtCanIDMask = [ 0 , 0 , UnusedCanFiller , UnusedCanFiller ];
 
 G_UserInfo_init = Simulink.Parameter;
 G_UserInfo_init.Value = G_UserInfo_initV ; 

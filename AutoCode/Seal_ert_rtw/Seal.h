@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.121
+ * Model version                  : 11.127
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Fri Aug 29 14:01:44 2025
+ * C/C++ source code generated on : Sun Aug 31 22:30:40 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -25,7 +25,8 @@
 #endif                                 /* Seal_COMMON_INCLUDES_ */
 
 /* user code (top of header file) */
-#include ".\ExternalCode\CANServer.h"
+#include "CANServer.h"
+#include "DeviceSetup.h"
 #ifndef DEFINED_TYPEDEF_FOR_FeedbackBuf_T_
 #define DEFINED_TYPEDEF_FOR_FeedbackBuf_T_
 
@@ -313,22 +314,6 @@ typedef struct {
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_UserInfo_T_
-#define DEFINED_TYPEDEF_FOR_UserInfo_T_
-
-typedef struct {
-  /* Version control number */
-  int32_T VersionNumber;
-
-  /* Stam zbala */
-  real32_T junk1;
-
-  /* Stam vector zbala */
-  int32_T junk2[4];
-} UserInfo_T;
-
-#endif
-
 #ifndef DEFINED_TYPEDEF_FOR_PosProfilerState_T_
 #define DEFINED_TYPEDEF_FOR_PosProfilerState_T_
 
@@ -411,6 +396,34 @@ typedef struct {
 
 #endif
 
+#ifndef DEFINED_TYPEDEF_FOR_UserInfo_T_
+#define DEFINED_TYPEDEF_FOR_UserInfo_T_
+
+typedef struct {
+  /* Version control number */
+  int32_T VersionNumber;
+
+  /* 1: Request control of UART */
+  uint16_T bUseUart;
+
+  /* Baud rate of UART (if bUseUart) */
+  uint32_T bUartBaudRate;
+
+  /* CAN IDs used locally by CAN */
+  uint32_T CanID[4];
+
+  /* CAN ID masks used locally by CAN */
+  uint32_T CanIDMask[4];
+
+  /* CAN IDs used locally by CAN */
+  uint32_T ExtCanID[4];
+
+  /* CAN ID masks used locally by CAN */
+  uint32_T ExtCanIDMask[4];
+} UserInfo_T;
+
+#endif
+
 #ifndef DEFINED_TYPEDEF_FOR_MicroInterp_T_
 #define DEFINED_TYPEDEF_FOR_MicroInterp_T_
 
@@ -461,6 +474,7 @@ typedef uint16_T VarDataTypes;
 
 /* Block signals and states (default storage) for system '<Root>' */
 typedef struct {
+  UserInfo_T G_UserInfo;               /* '<Root>/User information' */
   PosProfilerData_T G_PosProfilerData; /* '<Root>/Data Store Memory2' */
   PosProfilerState_T G_PosProfilerState;/* '<Root>/Data Store Memory5' */
   CANMessage_T CANMessage_Init;        /* '<S10>/Data Store Memory' */
@@ -511,6 +525,9 @@ extern ExtY rtY;
  * these parameters and exports their symbols.
  *
  */
+extern UserInfo_T G_UserInfo_init;     /* Variable: G_UserInfo_init
+                                        * Referenced by: '<Root>/User information'
+                                        */
 extern PosProfilerData_T PosProfilerData_init;/* Variable: PosProfilerData_init
                                                * Referenced by: '<Root>/Data Store Memory2'
                                                */
@@ -538,7 +555,6 @@ extern real_T KpSpeed;                 /* Variable: KpSpeed
  * states and exports their symbols.
  *
  */
-extern UserInfo_T G_UserInfo;          /* '<Root>/Data Store Memory4' */
 extern SEALVerControl_T G_SEALVerControl;/* '<Root>/Data Store Memory6' */
 
 /* Model entry point functions */
@@ -573,6 +589,15 @@ extern void UartAddChar(void);
 
 /* Exported entry point function */
 extern void UartGetChar(void);
+
+/*-
+ * These blocks were eliminated from the model due to optimizations:
+ *
+ * Block '<S6>/Reshape' : Reshape block reduction
+ * Block '<S6>/Reshape1' : Reshape block reduction
+ * Block '<S6>/Reshape2' : Reshape block reduction
+ * Block '<S6>/Reshape3' : Reshape block reduction
+ */
 
 /*-
  * The generated code includes comments that allow you to trace directly

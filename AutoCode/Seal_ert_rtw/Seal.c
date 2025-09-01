@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.121
+ * Model version                  : 11.127
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Fri Aug 29 14:01:44 2025
+ * C/C++ source code generated on : Sun Aug 31 22:30:40 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -25,6 +25,22 @@
 #include "div_nde_s16_floor.h"
 
 /* Exported block parameters */
+UserInfo_T G_UserInfo_init = {
+  1L,
+  1U,
+  230400UL,
+
+  { 1000UL, 2000UL, 2147483647UL, 2147483647UL },
+
+  { 0UL, 0UL, 2147483647UL, 2147483647UL },
+
+  { 1000UL, 2000UL, 2147483647UL, 2147483647UL },
+
+  { 0UL, 0UL, 2147483647UL, 2147483647UL }
+} ;                                    /* Variable: G_UserInfo_init
+                                        * Referenced by: '<Root>/User information'
+                                        */
+
 PosProfilerData_T PosProfilerData_init = {
   0.0F,
   1.0F,
@@ -67,7 +83,6 @@ real_T KpSpeed = 5.0;                  /* Variable: KpSpeed
                                         */
 
 /* Exported block states */
-UserInfo_T G_UserInfo;                 /* '<Root>/Data Store Memory4' */
 SEALVerControl_T G_SEALVerControl;     /* '<Root>/Data Store Memory6' */
 
 /* Block signals and states (default storage) */
@@ -883,19 +898,26 @@ void IdleLoopUART(void)
 /* Model step function */
 void SetupDrive(void)
 {
-  real_T b_value;
   int32_T retCode;
 
   /* RootInportFunctionCallGenerator generated from: '<Root>/SetupDrive' incorporates:
    *  SubSystem: '<Root>/Drive configuration'
    */
+  /* CCaller: '<S6>/C Call Set UART parameters' incorporates:
+   *  DataStoreRead: '<S6>/Data Store Read'
+   */
+  SetUartParameters(rtDW.G_UserInfo.bUseUart, rtDW.G_UserInfo.bUartBaudRate);
+
+  /* CCaller: '<S6>/C Call Set CAN parameters' incorporates:
+   *  DataStoreRead: '<S6>/Data Store Read1'
+   */
+  SetCanParameters(&rtDW.G_UserInfo.CanID[0L], &rtDW.G_UserInfo.CanIDMask[0L],
+                   &rtDW.G_UserInfo.ExtCanID[0L], &rtDW.G_UserInfo.ExtCanIDMask
+                   [0L]);
+
   /* MATLAB Function: '<S6>/MATLAB Function' */
   retCode = 0L;
   SetObject2Drive(24816U, 1U, 150000.0, T_uint32, &retCode);
-  retCode = 0L;
-  b_value = 0.0;
-  GetObjectFromDrive(24816U, 1U, T_uint32, &b_value, &retCode);
-  G_UserInfo.junk1 = (real32_T)b_value;
 
   /* End of Outputs for RootInportFunctionCallGenerator generated from: '<Root>/SetupDrive' */
 }
@@ -960,6 +982,9 @@ void Seal_initialize(void)
 
   /* Start for DataStoreMemory: '<Root>/Data Store Memory5' */
   rtDW.G_PosProfilerState = PosProfilerState_init;
+
+  /* Start for DataStoreMemory: '<Root>/User information' */
+  rtDW.G_UserInfo = G_UserInfo_init;
 }
 
 /*
