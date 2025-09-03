@@ -2,7 +2,7 @@
 ## Makefile generated for component 'Seal'. 
 ## 
 ## Makefile     : Seal.mk
-## Generated on : Tue Aug 19 11:48:59 2025
+## Generated on : Tue Sep 02 15:54:04 2025
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)\Seal.exe
 ## Product type : executable
 ## 
@@ -185,7 +185,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS) $(DEFINES_STAN
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)\Seal_ert_rtw\Seal.c C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c
+SRCS = $(START_DIR)\Seal_ert_rtw\Seal.c $(START_DIR)\Seal_ert_rtw\Seal_data.c C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c C:\Projects\SEAL\SealApp\ExternalCode\DeviceSetup.c
 
 MAIN_SRC = $(START_DIR)\Seal_ert_rtw\ert_main.c
 
@@ -195,7 +195,7 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = Seal.obj CANServer.obj
+OBJS = Seal.obj Seal_data.obj CANServer.obj DeviceSetup.obj
 
 MAIN_OBJ = ert_main.obj
 
@@ -436,12 +436,20 @@ Seal.obj : "$(START_DIR)\Seal_ert_rtw\Seal.c"
 	$(CC) $(CFLAGS) -Fo"$@" "$(START_DIR)\Seal_ert_rtw\Seal.c"
 
 
+Seal_data.obj : "$(START_DIR)\Seal_ert_rtw\Seal_data.c"
+	$(CC) $(CFLAGS) -Fo"$@" "$(START_DIR)\Seal_ert_rtw\Seal_data.c"
+
+
 ert_main.obj : "$(START_DIR)\Seal_ert_rtw\ert_main.c"
 	$(CC) $(CFLAGS) -Fo"$@" "$(START_DIR)\Seal_ert_rtw\ert_main.c"
 
 
 CANServer.obj : C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c
 	$(CC) $(CFLAGS) -Fo"$@" C:\Projects\SEAL\SealApp\ExternalCode\CANServer.c
+
+
+DeviceSetup.obj : C:\Projects\SEAL\SealApp\ExternalCode\DeviceSetup.c
+	$(CC) $(CFLAGS) -Fo"$@" C:\Projects\SEAL\SealApp\ExternalCode\DeviceSetup.c
 
 
 ###########################################################################

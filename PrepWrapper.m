@@ -16,7 +16,20 @@ cd(targetFolder);
 bi = load('buildInfo.mat');                         % gives you buildInfo
 buildInfo = bi.buildInfo ; 
 buildOpts = bi.buildOpts ; 
+buildSrc  = buildInfo.Src.Files ; 
 templateMakefile = bi.templateMakefile ; 
+for cnt = 1:numel(buildSrc) 
+    next = buildSrc(cnt).FileName;
+    if ( contains( buildSrc(cnt).Path,'ExternalCode') ) 
+        continue ; 
+    end
+    if ~isfile(next) 
+        disp( ["File: was missing, set as empty :" , next ] );
+        writelines("//File"+next, next);
+    else
+        disp( ["File: discovered :" , next ] );        
+    end
+end
 
 packNGo(buildInfo, ...
     'fileName', [PD.ModelName '_deploy.zip'], ...

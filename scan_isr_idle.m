@@ -124,7 +124,7 @@ for i = 1:m
                 InitializeDetected = 1 ; 
             elseif isequal( string(name), ExpectedUpdateEventSet )
                 UpdateEventDetected = 1 ;     
-            elseif any(strcmp(  string(name),  {'UartAddChar','UartGetChar','CanGetTxMsg','CanSetRxMsg'})) 
+            elseif any(strcmp(  string(name),  {'UartAddChar','UartGetChar','CanGetTxMsg','CanSetRxMsg','EnvSet','EnvGet'})) 
             else
                 errmsg = (st+" : Unidentified function for the seal.") ; 
                 return ;             

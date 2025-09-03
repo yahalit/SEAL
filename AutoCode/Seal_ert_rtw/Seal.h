@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.127
+ * Model version                  : 11.134
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Sun Aug 31 22:30:40 2025
+ * C/C++ source code generated on : Tue Sep  2 15:53:13 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -407,7 +407,7 @@ typedef struct {
   uint16_T bUseUart;
 
   /* Baud rate of UART (if bUseUart) */
-  uint32_T bUartBaudRate;
+  uint32_T UartBaudRate;
 
   /* CAN IDs used locally by CAN */
   uint32_T CanID[4];
@@ -484,16 +484,16 @@ typedef struct {
 /* External inputs (root inport signals with default storage) */
 typedef struct {
   FeedbackBuf_T DrvFeedback;           /* '<Root>/DrvFeedback' */
-  SetupReportBuf_T DrvSetup;           /* '<Root>/DrvSetup' */
-  uint16_T u;                          /* '<Root>/u' */
+  SetupReportBuf_T DrvReportSetupData; /* '<Root>/DrvReportSetupData' */
+  uint16_T InChar;                     /* '<Root>/InChar' */
   CANMessage_T RxMsg;                  /* '<Root>/RxMsg' */
 } ExtU;
 
 /* External outputs (root outports fed by signals with default storage) */
 typedef struct {
   DrvCommandBuf_T DrvCommand;          /* '<Root>/DrvCommand' */
-  uint16_T Out1;                       /* '<Root>/Out1' */
-  CANMessage_T y;                      /* '<Root>/y' */
+  uint16_T UartTxChar;                 /* '<Root>/UartTxChar' */
+  CANMessage_T CanMsg;                 /* '<Root>/CanMsg' */
 } ExtY;
 
 /* Imported (extern) states */
@@ -565,6 +565,9 @@ extern void CanGetTxMsg(void);
 
 /* Exported entry point function */
 extern void CanSetRxMsg(void);
+
+/* Exported entry point function */
+extern void EnvGet(void);
 
 /* Exported entry point function */
 extern void EnvSet(void);

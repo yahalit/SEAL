@@ -113,7 +113,7 @@ UnusedCanFiller = 2^31 - 1 ;
 uelems(7,1) =Simulink.BusElement ;
 uelems(1) = SetBusElement('VersionNumber','int32',"Version control number" ) ; 
 uelems(2) = SetBusElement('bUseUart','uint16',"1: Request control of UART" ) ; 
-uelems(3) = SetBusElement('bUartBaudRate','uint32',"Baud rate of UART (if bUseUart)" ) ; 
+uelems(3) = SetBusElement('UartBaudRate','uint32',"Baud rate of UART (if bUseUart)" ) ; 
 uelems(4) = SetBusElement('CanID','uint32',"CAN IDs used locally by CAN",[1,4] ) ; 
 uelems(5) = SetBusElement('CanIDMask','uint32',"CAN ID masks used locally by CAN",[1,4] ) ; 
 uelems(6) = SetBusElement('ExtCanID','uint32',"CAN IDs used locally by CAN",[1,4] ) ; 
@@ -123,13 +123,13 @@ UserInfo_T.Elements = uelems;
 assignin(DesignDataSection,'UserInfo_T',UserInfo_T); 
 
 G_UserInfo_initV = Simulink.Bus.createMATLABStruct('UserInfo_T');
-G_UserInfo_initV.VersionNumber = 1 ; 
-G_UserInfo_initV.bUseUart = 1 ; 
-G_UserInfo_initV.UartBaudRate = 230400 ; 
-G_UserInfo_initV.CanID = [ 1000 , 2000 , UnusedCanFiller , UnusedCanFiller ];
-G_UserInfo_initV.CanIDMask = [ 0 , 0 , UnusedCanFiller , UnusedCanFiller ];
-G_UserInfo_initV.ExtCanID = [ 1000 , 2000 , UnusedCanFiller , UnusedCanFiller ];
-G_UserInfo_initV.ExtCanIDMask = [ 0 , 0 , UnusedCanFiller , UnusedCanFiller ];
+G_UserInfo_initV.VersionNumber = int32(1) ; 
+G_UserInfo_initV.bUseUart = uint16(1) ; 
+G_UserInfo_initV.UartBaudRate = uint32(230400) ; 
+G_UserInfo_initV.CanID = uint32([ 1000 , 2000 , UnusedCanFiller , UnusedCanFiller ]);
+G_UserInfo_initV.CanIDMask = uint32([ 0 , 0 , UnusedCanFiller , UnusedCanFiller ]);
+G_UserInfo_initV.ExtCanID = uint32([ 1000 , 2000 , UnusedCanFiller , UnusedCanFiller ]);
+G_UserInfo_initV.ExtCanIDMask = uint32([ 0 , 0 , UnusedCanFiller , UnusedCanFiller ]);
 
 G_UserInfo_init = Simulink.Parameter;
 G_UserInfo_init.Value = G_UserInfo_initV ; 
@@ -137,7 +137,7 @@ G_UserInfo_init.StorageClass  = 'ExportedGlobal';
 G_UserInfo_init.DataType = "Bus: UserInfo_T" ;
 
 
-assignin(DesignDataSection,'G_UserInfo',G_UserInfo_init);   
+assignin(DesignDataSection,'G_UserInfo_init',G_UserInfo_init);   
 
 
 % 4) Save the dictionary and close all the open dictionaries
