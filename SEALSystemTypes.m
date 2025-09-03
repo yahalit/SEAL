@@ -179,8 +179,13 @@ felems(20)  = SetBusElement('ProfiledPositionCommand','double',"Drive-sourecd Co
 felems(21)  = SetBusElement('ProfiledSpeedCommand','double',"Drive sources Command to speed controller" ) ; 
 felems(22)  = SetBusElement('ProfiledTorqueCommand','double',"Drive sources Command to current controller" ) ; 
 
-LogBusInSLDD(DataDictionary,  'FeedbackBuf_T' , felems) ;
+FeedbackBuf_T_Instance = LogBusInSLDD(DataDictionary,  'FeedbackBuf_T' , felems) ;
 LogSignalInSLDD(dataSection, 'FeedbackBuf_T' , 'G_FeedbackBuf') ; 
+
+% Signal for drive simulation
+assignin(dataSection,'Drv_FeedbackBuf_T_init',FeedbackBuf_T_Instance);    
+
+
 
 %% Enumerated type for reference modes
 et = Simulink.data.dictionary.EnumTypeDefinition;
