@@ -50,3 +50,5 @@ end
 
 %% Log the post-code-generation processor
 set_param(mdl,'PostCodeGenCommand','PrepWrapper');
+
+simpars ; % Initialize host simulation
