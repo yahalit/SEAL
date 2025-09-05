@@ -43,7 +43,6 @@ void EventThrower_Outputs_wrapper(const real_T *Trigger,
       y1[0].im = u1[0].im;
  */
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */
-	int l; 
 	if (xD[1])
 	{
 		ssCallSystemWithTid(S, 0, tid);
@@ -74,7 +73,7 @@ void EventThrower_Update_wrapper(const real_T *Trigger,
 		xD[1] = l;
 		for (cnt = 1; cnt <= l ; cnt++)
 		{
-			xdD[2 + cnt] = (double)Message[l-cnt]; 
+			xD[2 + cnt] = (double)Message[l-cnt]; 
 		}
 	} 
 	else

@@ -3,3 +3,5 @@ AutoCache/
 slprj/
 AutoCode/slprj/
 AutoCode/Seal_ert_rtw/html/
+*.pdb
+
