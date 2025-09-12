@@ -2,7 +2,7 @@
 % This SLDD is a secondary referenced SLDD so it can be safely deleted and
 % restores without affecting other user selections.
 % Run AtpStart before to define the directories 
-
+SealProjectDescriptor.ProtectedBusArray = [] ; 
 
 % Kill the SEALGenericTypes if it exists
 % Compare against the requested file
@@ -52,52 +52,25 @@ DesignDataSection = getSection(dd,'Design Data');
 % 2) Build the bus in code
 
 %% Define the profiler data
-pelems(8,1) =Simulink.BusElement ;
-pelems(1) = SetBusElement('PositionTarget','single',"Final position to arrive" ) ; 
-pelems(2) = SetBusElement('ProfileSpeed','single',"Maximum speed" ) ; 
-pelems(3) = SetBusElement('ProfileAcceleration','single',"Maximum Profile acceleration" ) ; 
-pelems(4) = SetBusElement('ProfileDeceleration','single',"Maximum Profile deceleration" ) ; 
-pelems(5) = SetBusElement('ProfileFilterDen','double',"Filter monic polynomial for profile filtering",[4,1] ) ; 
-pelems(6) = SetBusElement('ProfileFilterNum','double',"Filter numerator for profile filtering",[1,1] ) ; 
-pelems(7) = SetBusElement('ProfileDataOk','uint16',"Flag that profiler data is consistent",[1,1] ) ; 
-pelems(8) = SetBusElement('Ts','single',"Profiler sampling time " ) ;
-PosProfilerData_T = Simulink.Bus;
-PosProfilerData_T.Elements = pelems;
+pos0 = 0 ; 
+ den = [1.000000000000000 ; -0.874052257056399 ;  0.280840263500717 ; -0.024477523271653 ]; 
+ numer = 0.382310483172666 ; 
+ IsProtected = true; 
+PosProfilerDataStructInit = struct('PositionTarget',pos0,'ProfileSpeed',0,'ProfileAcceleration',1e3,...
+    'ProfileDeceleration',1e3,'ProfileFilterDen',den,'ProfileFilterNum',numer,'Ts',0,'ProfileDataOk',uint16(0)) ; 
+Description = ["inal position to arrive","Maximum speed","Maximum Profile acceleration","Maximum Profile absolute deceleration",...
+    "Filter monic polynomial for profile filtering","Filter numerator for profile filtering",...
+    "Profiler sampling time","Flag that profiler data is consistent" ] ; 
+CreateProtectedBus(DesignDataSection,'PosProfilerData_T','Gp_PosProfilerData',IsProtected,'PosProfilerData_init',PosProfilerDataStructInit,Description);  
 
-assignin(DesignDataSection,'PosProfilerData_T',PosProfilerData_T);     
-PosProfilerDataStructPrototype = Simulink.Bus.createMATLABStruct('PosProfilerData_T');
-PosProfilerDataStructPrototype.PositionTarget = 0 ; 
-PosProfilerDataStructPrototype.ProfileSpeed   = 1 ; 
-PosProfilerDataStructPrototype.ProfileAcceleration   = 1 ; 
-PosProfilerDataStructPrototype.ProfileDeceleration   = 1 ; 
-PosProfilerDataStructPrototype.ProfileFilterDen   = [1.000000000000000 ; -0.874052257056399 ;  0.280840263500717 ; -0.024477523271653 ] ; 
-PosProfilerDataStructPrototype.ProfileFilterNum   = 0.382310483172666 ; 
-PosProfilerDataStructPrototype.ProfileDataOk = 0 ;
-
-PosProfilerData_init = Simulink.Parameter;
-PosProfilerData_init.DataType = 'Bus: PosProfilerData_T';
-PosProfilerData_init.Value     = PosProfilerDataStructPrototype ;
-PosProfilerData_init.StorageClass  = 'ExportedGlobal';
-
-assignin(DesignDataSection,'PosProfilerData_init',PosProfilerData_init);    
 
 %% Define the profiler state 
-ppelems(3,1) =Simulink.BusElement ;
-ppelems(1) = SetBusElement('Position','double',"Position state of profiler" ) ; 
-ppelems(2) = SetBusElement('Speed','double',"Speed state of profiler" ) ; 
-ppelems(3) = SetBusElement('FiltState','double',"State of profiling filter",[4,1] ) ; 
-PosProfilerState_T = Simulink.Bus;
-PosProfilerState_T.Elements = ppelems;
-  
-assignin(DesignDataSection,'PosProfilerState_T',PosProfilerState_T);     
-PosProfilerStateStructPrototype = Simulink.Bus.createMATLABStruct('PosProfilerState_T');
 
-PosProfilerState_init = Simulink.Parameter;
-PosProfilerState_init.DataType = 'Bus: PosProfilerState_T';
-PosProfilerState_init.Value     = PosProfilerStateStructPrototype ;
-PosProfilerState_init.StorageClass  = 'ExportedGlobal';
+pos0 = 0 ; 
+PosProfilerStateStructInit = struct('Position',pos0,'Speed',0,'FiltState',pos0*ones(4,1)) ; 
+Description = ["Position state of profiler","Speed state of profiler","State of profiling filter"] ; 
+CreateProtectedBus(DesignDataSection,'PosProfilerState_T','Gp_PosProfilerState',1,'G_PosProfilerState_init',PosProfilerStateStructInit,Description);  
 
-assignin(DesignDataSection,'PosProfilerState_init',PosProfilerState_init);    
 
 %% Define parameters
 SetSealParameter(DesignDataSection,'Kp',5) ;

@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.127
+ * Model version                  : 11.154
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Sun Aug 31 22:30:40 2025
+ * C/C++ source code generated on : Fri Sep 12 16:59:24 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -88,6 +88,18 @@ void sample_usage_EnvSet(void)
 
   /* Call to exported function */
   EnvSet();
+
+  /* Read function outputs here */
+}
+
+/* Example use case for call to exported function: EnvGet */
+extern void sample_usage_EnvGet(void);
+void sample_usage_EnvGet(void)
+{
+  /* Set task inputs here */
+
+  /* Call to exported function */
+  EnvGet();
 
   /* Read function outputs here */
 }

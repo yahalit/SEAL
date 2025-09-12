@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.134
+ * Model version                  : 11.154
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Tue Sep  2 15:53:13 2025
+ * C/C++ source code generated on : Fri Sep 12 16:59:24 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -208,17 +208,17 @@ typedef struct {
 #define DEFINED_TYPEDEF_FOR_PosProfilerData_T_
 
 typedef struct {
-  /* Final position to arrive */
-  real32_T PositionTarget;
+  /* inal position to arrive */
+  real_T PositionTarget;
 
   /* Maximum speed */
-  real32_T ProfileSpeed;
+  real_T ProfileSpeed;
 
   /* Maximum Profile acceleration */
-  real32_T ProfileAcceleration;
+  real_T ProfileAcceleration;
 
-  /* Maximum Profile deceleration */
-  real32_T ProfileDeceleration;
+  /* Maximum Profile absolute deceleration */
+  real_T ProfileDeceleration;
 
   /* Filter monic polynomial for profile filtering */
   real_T ProfileFilterDen[4];
@@ -226,11 +226,11 @@ typedef struct {
   /* Filter numerator for profile filtering */
   real_T ProfileFilterNum;
 
+  /* Profiler sampling time */
+  real_T Ts;
+
   /* Flag that profiler data is consistent */
   uint16_T ProfileDataOk;
-
-  /* Profiler sampling time  */
-  real32_T Ts;
 } PosProfilerData_T;
 
 #endif
@@ -474,9 +474,8 @@ typedef uint16_T VarDataTypes;
 
 /* Block signals and states (default storage) for system '<Root>' */
 typedef struct {
+  PosProfilerData_T Gp_PosProfilerData;/* '<Root>/Data Store Memory2' */
   UserInfo_T G_UserInfo;               /* '<Root>/User information' */
-  PosProfilerData_T G_PosProfilerData; /* '<Root>/Data Store Memory2' */
-  PosProfilerState_T G_PosProfilerState;/* '<Root>/Data Store Memory5' */
   CANMessage_T CANMessage_Init;        /* '<S10>/Data Store Memory' */
   real_T DiscreteFilter_states;        /* '<S1>/Discrete Filter' */
 } DW;
@@ -492,8 +491,8 @@ typedef struct {
 /* External outputs (root outports fed by signals with default storage) */
 typedef struct {
   DrvCommandBuf_T DrvCommand;          /* '<Root>/DrvCommand' */
-  uint16_T UartTxChar;                 /* '<Root>/UartTxChar' */
-  CANMessage_T CanMsg;                 /* '<Root>/CanMsg' */
+  UartCyclicBuf_T UartTxChar;          /* '<Root>/UartTxChar' */
+  CANMessage_T CanTxMsg;               /* '<Root>/CanTxMsg' */
 } ExtY;
 
 /* Imported (extern) states */
@@ -507,6 +506,7 @@ extern CANCyclicBuf_T *G_pCANCyclicBuf_out;/* '<Root>/G_CANCyclicBuf_out' */
 extern CANCyclicBuf_T *G_pCANCyclicBuf_in;/* '<Root>/G_CANCyclicBuf_in' */
 extern UartCyclicBuf_T *G_pUartCyclicBuf_in;/* '<Root>/G_UartCyclicBuf_in' */
 extern UartCyclicBuf_T *G_pUartCyclicBuf_out;/* '<Root>/G_UartCyclicBuf_out' */
+extern PosProfilerState_T *Gp_PosProfilerState;/* '<Root>/Data Store Memory5' */
 
 /* Block signals and states (default storage) */
 extern DW rtDW;
@@ -525,15 +525,15 @@ extern ExtY rtY;
  * these parameters and exports their symbols.
  *
  */
-extern UserInfo_T G_UserInfo_init;     /* Variable: G_UserInfo_init
-                                        * Referenced by: '<Root>/User information'
-                                        */
 extern PosProfilerData_T PosProfilerData_init;/* Variable: PosProfilerData_init
                                                * Referenced by: '<Root>/Data Store Memory2'
                                                */
-extern PosProfilerState_T PosProfilerState_init;/* Variable: PosProfilerState_init
-                                                 * Referenced by: '<Root>/Data Store Memory5'
-                                                 */
+extern UserInfo_T G_UserInfo_init;     /* Variable: G_UserInfo_init
+                                        * Referenced by: '<Root>/User information'
+                                        */
+extern PosProfilerState_T G_PosProfilerState_init;/* Variable: G_PosProfilerState_init
+                                                   * Referenced by: '<Root>/Data Store Memory5'
+                                                   */
 extern SEALVerControl_T SEALVerControl_init;/* Variable: SEALVerControl_init
                                              * Referenced by: '<Root>/Data Store Memory6'
                                              */
@@ -637,7 +637,7 @@ extern void UartGetChar(void);
  * '<S18>'  : 'Seal/Get CAN Msg to transmit/MATLAB Function'
  * '<S19>'  : 'Seal/Idle process CAN interpreter/CAN message response'
  * '<S20>'  : 'Seal/Idle process UART interpreter/UART message response'
- * '<S21>'  : 'Seal/Remove UART char for Tx/MATLAB Function'
+ * '<S21>'  : 'Seal/Remove UART char for Tx/Get From UART FIFO'
  */
 
 /*-

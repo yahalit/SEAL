@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Seal'.
  *
- * Model version                  : 11.134
+ * Model version                  : 11.154
  * Simulink Coder version         : 25.1 (R2025a) 21-Nov-2024
- * C/C++ source code generated on : Tue Sep  2 15:53:13 2025
+ * C/C++ source code generated on : Fri Sep 12 16:59:24 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -25,6 +25,20 @@
 #include "div_nde_s16_floor.h"
 
 /* Exported block parameters */
+PosProfilerData_T PosProfilerData_init = {
+  0.0,
+  0.0,
+  1000.0,
+  1000.0,
+
+  { 1.0, -0.874052257056399, 0.280840263500717, -0.024477523271653 },
+  0.382310483172666,
+  0.0,
+  0U
+} ;                                    /* Variable: PosProfilerData_init
+                                        * Referenced by: '<Root>/Data Store Memory2'
+                                        */
+
 UserInfo_T G_UserInfo_init = {
   1L,
   1U,
@@ -41,26 +55,12 @@ UserInfo_T G_UserInfo_init = {
                                         * Referenced by: '<Root>/User information'
                                         */
 
-PosProfilerData_T PosProfilerData_init = {
-  0.0F,
-  1.0F,
-  1.0F,
-  1.0F,
-
-  { 1.0, -0.874052257056399, 0.280840263500717, -0.024477523271653 },
-  0.382310483172666,
-  0U,
-  0.0F
-} ;                                    /* Variable: PosProfilerData_init
-                                        * Referenced by: '<Root>/Data Store Memory2'
-                                        */
-
-PosProfilerState_T PosProfilerState_init = {
+PosProfilerState_T G_PosProfilerState_init = {
   0.0,
   0.0,
 
   { 0.0, 0.0, 0.0, 0.0 }
-} ;                                    /* Variable: PosProfilerState_init
+} ;                                    /* Variable: G_PosProfilerState_init
                                         * Referenced by: '<Root>/Data Store Memory5'
                                         */
 
@@ -104,28 +104,28 @@ void CanGetTxMsg(void)
   /* RootInportFunctionCallGenerator generated from: '<Root>/CanGetTxMsg' incorporates:
    *  SubSystem: '<Root>/Get CAN Msg to transmit'
    */
-  /* Outport: '<Root>/CanMsg' incorporates:
+  /* Outport: '<Root>/CanTxMsg' incorporates:
    *  DataStoreRead: '<S10>/Data Store Read'
    *  MATLAB Function: '<S10>/MATLAB Function'
    */
-  rtY.CanMsg = rtDW.CANMessage_Init;
+  rtY.CanTxMsg = rtDW.CANMessage_Init;
 
   /* MATLAB Function: '<S10>/MATLAB Function' incorporates:
-   *  Outport: '<Root>/CanMsg'
+   *  Outport: '<Root>/CanTxMsg'
    */
   if (G_pCANCyclicBuf_out->PutCounter != G_pCANCyclicBuf_out->FetchCounter) {
     next = (G_pCANCyclicBuf_out->FetchCounter & 255U) + 1U;
-    rtY.CanMsg.CANID = G_pCANCyclicBuf_out->CANID[(int16_T)next - 1];
-    rtY.CanMsg.DataLen = G_pCANCyclicBuf_out->DLenAndAttrib[(int16_T)next - 1];
+    rtY.CanTxMsg.CANID = G_pCANCyclicBuf_out->CANID[(int16_T)next - 1];
+    rtY.CanTxMsg.DataLen = G_pCANCyclicBuf_out->DLenAndAttrib[(int16_T)next - 1];
     tmp = (int16_T)(next << 1U);
-    rtY.CanMsg.MsgData[0] = G_pCANCyclicBuf_out->CANQueue[tmp - 2];
-    rtY.CanMsg.MsgData[1] = G_pCANCyclicBuf_out->CANQueue[tmp - 1];
+    rtY.CanTxMsg.MsgData[0] = G_pCANCyclicBuf_out->CANQueue[tmp - 2];
+    rtY.CanTxMsg.MsgData[1] = G_pCANCyclicBuf_out->CANQueue[tmp - 1];
     qY = G_pCANCyclicBuf_out->FetchCounter - G_pCANCyclicBuf_out->PutCounter;
     if (qY > G_pCANCyclicBuf_out->FetchCounter) {
       qY = 0U;
     }
 
-    rtY.CanMsg.CANTxCnt = qY - ((qY >> 6U) << 6U);
+    rtY.CanTxMsg.CANTxCnt = qY - ((qY >> 6U) << 6U);
     G_pCANCyclicBuf_out->FetchCounter = next;
   }
 
@@ -250,121 +250,102 @@ void ISR100uController(void)
 /* Model step function */
 void ISR100uProfiler(void)
 {
-  real_T NewFiltState1;
-  real_T NewFiltState2;
-  real_T NewFiltState3;
+  real_T Delta;
   real_T speed;
-  real_T tmp;
-  real32_T Delta;
-  real32_T ex;
-  real32_T pos;
-  int16_T b;
+  real_T x_idx_1;
+  int16_T Direction;
 
   /* RootInportFunctionCallGenerator generated from: '<Root>/ISR100uProfiler' incorporates:
    *  SubSystem: '<Root>/100 usec Periodic profiler'
    */
-  /* MATLAB Function: '<S2>/MATLAB Function' */
-  if (rtDW.G_PosProfilerData.ProfileDataOk == 0U) {
-    Delta = (real32_T)fabs(rtDW.G_PosProfilerState.Speed) -
-      rtDW.G_PosProfilerData.Ts * G_SetupReportBuf.AbsoluteAccelerationLimit;
-    if (Delta < 0.0F) {
-      Delta = 0.0F;
+  /* MATLAB Function: '<S2>/MATLAB Function' incorporates:
+   *  DataStoreRead: '<S2>/Data Store Read1'
+   *  DataStoreRead: '<S2>/Data Store Read2'
+   */
+  if (rtDW.Gp_PosProfilerData.ProfileDataOk != 0U) {
+    speed = fabs(Gp_PosProfilerState->Speed) - rtDW.Gp_PosProfilerData.Ts *
+      G_SetupReportBuf.AbsoluteAccelerationLimit;
+    if (speed < 0.0) {
+      speed = 0.0;
     }
 
-    if (rtDW.G_PosProfilerState.Speed < 0.0) {
-      b = -1;
+    if (Gp_PosProfilerState->Speed < 0.0) {
+      Direction = -1;
     } else {
-      b = (rtDW.G_PosProfilerState.Speed > 0.0);
+      Direction = (Gp_PosProfilerState->Speed > 0.0);
     }
 
-    Delta *= (real32_T)b;
-    pos = (Delta + (real32_T)rtDW.G_PosProfilerState.Speed) *
-      rtDW.G_PosProfilerData.Ts * 0.5F + (real32_T)
-      rtDW.G_PosProfilerState.Position;
-    speed = pos;
-    NewFiltState3 = pos;
-    NewFiltState2 = pos;
-    NewFiltState1 = pos;
+    speed = (speed * (real_T)Direction + Gp_PosProfilerState->Speed) *
+      rtDW.Gp_PosProfilerData.Ts * 0.5 + Gp_PosProfilerState->Position;
   } else {
-    Delta = (rtDW.G_PosProfilerData.PositionTarget - (real32_T)
-             rtDW.G_PosProfilerState.Position) - (real32_T)
-      (rtDW.G_PosProfilerState.Speed * rtDW.G_PosProfilerData.Ts * 0.5);
-    b = 1;
-    if (Delta < 0.0F) {
-      b = -1;
+    Delta = (rtDW.Gp_PosProfilerData.PositionTarget -
+             Gp_PosProfilerState->Position) - Gp_PosProfilerState->Speed *
+      rtDW.Gp_PosProfilerData.Ts * 0.5;
+    Direction = 1;
+    if (Delta < 0.0) {
+      Direction = -1;
       Delta = -Delta;
-      speed = -rtDW.G_PosProfilerState.Speed;
+      speed = -Gp_PosProfilerState->Speed;
     } else {
-      speed = rtDW.G_PosProfilerState.Speed;
+      speed = Gp_PosProfilerState->Speed;
     }
 
-    Delta = (real32_T)sqrt(Delta * 2.0F *
-      rtDW.G_PosProfilerData.ProfileDeceleration);
+    Delta = sqrt(Delta * 2.0 * rtDW.Gp_PosProfilerData.ProfileDeceleration);
     if (speed < Delta) {
-      pos = rtDW.G_PosProfilerData.Ts *
-        rtDW.G_PosProfilerData.ProfileDeceleration;
-      ex = (real32_T)speed;
-      if ((real32_T)speed > pos) {
-        ex = pos;
+      x_idx_1 = rtDW.Gp_PosProfilerData.Ts *
+        rtDW.Gp_PosProfilerData.ProfileDeceleration;
+      if (speed > x_idx_1) {
+        speed = x_idx_1;
       }
 
-      if (ex > rtDW.G_PosProfilerData.ProfileSpeed) {
-        ex = rtDW.G_PosProfilerData.ProfileSpeed;
+      if (speed > rtDW.Gp_PosProfilerData.ProfileSpeed) {
+        speed = rtDW.Gp_PosProfilerData.ProfileSpeed;
       }
 
-      if (ex > Delta) {
-        ex = Delta;
+      if (speed > Delta) {
+        speed = Delta;
       }
     } else {
-      ex = (real32_T)speed - rtDW.G_PosProfilerData.Ts *
-        rtDW.G_PosProfilerData.ProfileDeceleration * 1.02F;
-      if (Delta >= ex) {
-        ex = Delta;
+      speed -= rtDW.Gp_PosProfilerData.Ts *
+        rtDW.Gp_PosProfilerData.ProfileDeceleration * 1.02;
+      if (Delta >= speed) {
+        speed = Delta;
       }
     }
 
-    Delta = ex * (real32_T)b;
-    pos = (Delta + (real32_T)rtDW.G_PosProfilerState.Speed) *
-      rtDW.G_PosProfilerData.Ts * 0.5F + (real32_T)
-      rtDW.G_PosProfilerState.Position;
-    speed = rtDW.G_PosProfilerState.FiltState[2];
-    NewFiltState3 = rtDW.G_PosProfilerState.FiltState[1];
-    NewFiltState2 = rtDW.G_PosProfilerState.FiltState[0];
-    NewFiltState1 = -((rtDW.G_PosProfilerState.FiltState[0] *
-                       rtDW.G_PosProfilerData.ProfileFilterDen[1] +
-                       rtDW.G_PosProfilerState.FiltState[1] *
-                       rtDW.G_PosProfilerData.ProfileFilterDen[2]) +
-                      rtDW.G_PosProfilerState.FiltState[2] *
-                      rtDW.G_PosProfilerData.ProfileFilterDen[3]) + pos *
-      rtDW.G_PosProfilerData.ProfileFilterNum;
+    speed = ((speed * (real_T)Direction + Gp_PosProfilerState->Speed) *
+             rtDW.Gp_PosProfilerData.Ts * 0.5 + Gp_PosProfilerState->Position) *
+      rtDW.Gp_PosProfilerData.ProfileFilterNum -
+      ((Gp_PosProfilerState->FiltState[0] *
+        rtDW.Gp_PosProfilerData.ProfileFilterDen[1] +
+        Gp_PosProfilerState->FiltState[1] *
+        rtDW.Gp_PosProfilerData.ProfileFilterDen[2]) +
+       Gp_PosProfilerState->FiltState[2] *
+       rtDW.Gp_PosProfilerData.ProfileFilterDen[3]);
   }
 
-  rtDW.G_PosProfilerState.Position = pos;
-  rtDW.G_PosProfilerState.Speed = Delta;
-  if (rtDW.G_PosProfilerData.Ts >= 1.0E-5) {
-    tmp = rtDW.G_PosProfilerData.Ts;
+  /* BusAssignment: '<S2>/Bus Assignment' incorporates:
+   *  DataStoreWrite: '<S2>/Data Store Write1'
+   *  MATLAB Function: '<S2>/MATLAB Function'
+   */
+  G_DrvCommandBuf.PositionCommand = speed;
+
+  /* MATLAB Function: '<S2>/MATLAB Function' incorporates:
+   *  DataStoreRead: '<S2>/Data Store Read2'
+   */
+  if (rtDW.Gp_PosProfilerData.Ts >= 1.0E-5) {
+    Delta = rtDW.Gp_PosProfilerData.Ts;
   } else {
-    tmp = 1.0E-5;
+    Delta = 1.0E-5;
   }
 
   /* BusAssignment: '<S2>/Bus Assignment' incorporates:
+   *  DataStoreRead: '<S2>/Data Store Read1'
    *  DataStoreWrite: '<S2>/Data Store Write1'
    *  MATLAB Function: '<S2>/MATLAB Function'
    */
-  G_DrvCommandBuf.SpeedCommand = (NewFiltState1 -
-    rtDW.G_PosProfilerState.FiltState[0]) / tmp;
-
-  /* MATLAB Function: '<S2>/MATLAB Function' */
-  rtDW.G_PosProfilerState.FiltState[0] = NewFiltState1;
-  rtDW.G_PosProfilerState.FiltState[1] = NewFiltState2;
-  rtDW.G_PosProfilerState.FiltState[2] = NewFiltState3;
-  rtDW.G_PosProfilerState.FiltState[3] = speed;
-
-  /* BusAssignment: '<S2>/Bus Assignment' incorporates:
-   *  DataStoreWrite: '<S2>/Data Store Write1'
-   *  MATLAB Function: '<S2>/MATLAB Function'
-   */
-  G_DrvCommandBuf.PositionCommand = NewFiltState1;
+  G_DrvCommandBuf.SpeedCommand = (speed - Gp_PosProfilerState->FiltState[0]) /
+    Delta;
   G_DrvCommandBuf.CurrentCommand = 0.0;
 
   /* End of Outputs for RootInportFunctionCallGenerator generated from: '<Root>/ISR100uProfiler' */
@@ -955,23 +936,30 @@ void UartAddChar(void)
 /* Model step function */
 void UartGetChar(void)
 {
-  uint16_T next;
+  uint16_T nchars;
 
   /* RootInportFunctionCallGenerator generated from: '<Root>/UartGetChar' incorporates:
    *  SubSystem: '<Root>/Remove UART char for Tx'
    */
   /* Outport: '<Root>/UartTxChar' incorporates:
-   *  MATLAB Function: '<S13>/MATLAB Function'
+   *  MATLAB Function: '<S13>/Get From UART FIFO'
    */
-  rtY.UartTxChar = 0U;
+  rtY.UartTxChar = *G_pUartCyclicBuf_out;
 
-  /* MATLAB Function: '<S13>/MATLAB Function' */
-  if (G_pUartCyclicBuf_out->PutCounter != G_pUartCyclicBuf_out->FetchCounter) {
-    next = (G_pUartCyclicBuf_out->FetchCounter & 255U) + 1U;
+  /* MATLAB Function: '<S13>/Get From UART FIFO' incorporates:
+   *  Outport: '<Root>/UartTxChar'
+   */
+  nchars = G_pUartCyclicBuf_out->PutCounter - G_pUartCyclicBuf_out->FetchCounter;
+  if (nchars > G_pUartCyclicBuf_out->PutCounter) {
+    nchars = 0U;
+  }
 
-    /* Outport: '<Root>/UartTxChar' */
-    rtY.UartTxChar = G_pUartCyclicBuf_out->UARTQueue[(int16_T)next - 1];
-    G_pUartCyclicBuf_out->FetchCounter = next;
+  nchars -= (nchars >> 8U) << 8U;
+  rtY.UartTxChar.FetchCounter = 1U;
+  nchars -= (nchars >> 8U) << 8U;
+  rtY.UartTxChar.PutCounter = nchars + 1U;
+  if (nchars + 1U < nchars) {
+    rtY.UartTxChar.PutCounter = MAX_uint16_T;
   }
 
   /* End of Outputs for RootInportFunctionCallGenerator generated from: '<Root>/UartGetChar' */
@@ -984,10 +972,10 @@ void Seal_initialize(void)
   G_SEALVerControl = SEALVerControl_init;
 
   /* Start for DataStoreMemory: '<Root>/Data Store Memory2' */
-  rtDW.G_PosProfilerData = PosProfilerData_init;
+  rtDW.Gp_PosProfilerData = PosProfilerData_init;
 
   /* Start for DataStoreMemory: '<Root>/Data Store Memory5' */
-  rtDW.G_PosProfilerState = PosProfilerState_init;
+  *Gp_PosProfilerState = G_PosProfilerState_init;
 
   /* Start for DataStoreMemory: '<Root>/User information' */
   rtDW.G_UserInfo = G_UserInfo_init;
