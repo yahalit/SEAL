@@ -6,6 +6,6 @@ opts = struct('arrayFieldMode' ,'elementwise') ; %'whole-field-if-any') ;
 routineName = ['Protect',structName];
 fields = emit_change_function(headerPath, structName, outCPath, routineName, opts);
 
-headerPath = "C:\Projects\SEAL\SealRelease\AutoCode\Seal_ert_rtw\Seal.h";
-opts = struct('arrayFieldMode' ,'elementwise') ; %'whole-field-if-any') ;
-emitSealISRSnippet(SealProjectDescriptor.ProtectedBusArray, 'Stam2.c',headerPath,opts)
+
+emitSealISRSnippet(pba, outFile,headerPath,opts)
+emitSealISRSnippet(SealProjectDescriptor.ProtectedBusArray, 'Stam2.c')

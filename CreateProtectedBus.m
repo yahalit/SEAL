@@ -97,7 +97,8 @@ Instance.DataType = BusString;
 Instance.StorageClass = 'ImportedExternPointer';
 
 if IsProtected
-    SealProjectDescriptor.ProtectedBusArray = [SealProjectDescriptor.ProtectedBusArray,struct('Name',DataStoreName,'Type',busName)]  ; 
+    SealProjectDescriptor.ProtectedBusArray = [SealProjectDescriptor.ProtectedBusArray,...
+        struct('Name',DataStoreName,'Type',busName,'Initializer',InitName,'DataStoreName',DataStoreName)]  ; 
 end 
 assignin(DesignDataSection, DataStoreName ,Instance); 
 
