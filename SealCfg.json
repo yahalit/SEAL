@@ -1,0 +1,251 @@
+{
+  "Identity": {
+    "Description": { "t": "string", "v": "SEAL target definition for PROJ1" },
+    "Date":        { "t": "date",   "v": "2025-10-15" },
+    "Author":      { "t": "string", "v": "SolFlow Ver2.1" },
+    "Comment":     { "t": "string", "v": "Dont worry be happy" }
+  },
+  "System": {
+    "CPU":          { "t": "string", "v": "F29H85" },
+    "NumberOfAxes": { "t": "uint32", "v": 4 },
+    "CAN": {
+      "Available":       { "t": "bool",   "v": true },
+      "DefaultID":       { "t": "uint32", "v": 80 },
+      "DefaultBaudRate": { "t": "uint32", "v": 500000 },
+      "CanFD":           { "t": "bool",   "v": true },
+      "SharedWithDrive": { "t": "bool",   "v": false }
+    },
+    "UART": {
+      "Available":       { "t": "bool",   "v": true },
+      "FullDuplex":      { "t": "bool",   "v": true },
+      "DefaultBaudRate": { "t": "uint32", "v": 460800 },
+      "Setting":         { "t": "string", "v": "8Bit,1Stop" },
+      "Parity":          { "t": "string", "v": "None" },
+      "SharedWithDrive": { "t": "bool",   "v": false }
+    },
+    "EtherNet": {
+      "Available":       { "t": "bool",   "v": true },
+      "Type":            { "t": "string", "v": "W6100" },
+      "SharedWithDrive": { "t": "bool",   "v": false }
+    },
+    "EtherCAT": {
+      "Available": { "t": "bool", "v": false }
+    }
+  },
+  "FeedBack" : [
+	{ 
+	  "Encoder0":               { "t": "int32",  "v": 0 },
+	  "Encoder1":          { "t": "int32",  "v": 0 },
+	  "Encoder0Speed":          { "t": "single", "v": 0.0 },
+	  "Encoder1Speed":     { "t": "single", "v": 0.0 },
+	  "Iq":                        { "t": "single", "v": 0.0 },
+	  "Id":                        { "t": "single", "v": 0.0 },
+	  "DcBusVoltage":              { "t": "single", "v": 0.0 },
+	  "PowerStageTemperature":     { "t": "single", "v": 0.0 },
+	  "FieldAngle":                { "t": "single", "v": 0.0 },
+	  "ErrorCode":                 { "t": "uint32", "v": 0 },
+	  "LoopConfiguration":         { "t": "int16",  "v": 0 },
+	  "ReferenceMode":             { "t": "int16",  "v": 0 },
+	  "MotorOn":                   { "t": "int16",  "v": 0 },
+	  "HallCode":                  { "t": "int16",  "v": 0 },
+	  "STODisable":                { "t": "int16",  "v": 0 },
+	  "StatusBitField":            { "t": "int16",  "v": 0 },
+	  "ConfirmRelinquishControl":  { "t": "int16",  "v": 0 },
+	  "ProfiledPositionCommand":   { "t": "double", "v": 0.0 },
+	  "ProfiledSpeedCommand":      { "t": "double", "v": 0.0 },
+	  "ProfiledTorqueCommand":     { "t": "double", "v": 0.0 }
+	} , 
+	{ 
+	  "Encoder0":               { "t": "int32",  "v": 0 },
+	  "Encoder1":          { "t": "int32",  "v": 0 },
+	  "Encoder0Speed":          { "t": "single", "v": 0.0 },
+	  "Encoder1Speed":     { "t": "single", "v": 0.0 },
+	  "Iq":                        { "t": "single", "v": 0.0 },
+	  "Id":                        { "t": "single", "v": 0.0 },
+	  "DcBusVoltage":              { "t": "single", "v": 0.0 },
+	  "PowerStageTemperature":     { "t": "single", "v": 0.0 },
+	  "FieldAngle":                { "t": "single", "v": 0.0 },
+	  "ErrorCode":                 { "t": "uint32", "v": 0 },
+	  "LoopConfiguration":         { "t": "int16",  "v": 0 },
+	  "ReferenceMode":             { "t": "int16",  "v": 0 },
+	  "MotorOn":                   { "t": "int16",  "v": 0 },
+	  "HallCode":                  { "t": "int16",  "v": 0 },
+	  "STODisable":                { "t": "int16",  "v": 0 },
+	  "StatusBitField":            { "t": "int16",  "v": 0 },
+	  "ConfirmRelinquishControl":  { "t": "int16",  "v": 0 },
+	  "ProfiledPositionCommand":   { "t": "double", "v": 0.0 },
+	  "ProfiledSpeedCommand":      { "t": "double", "v": 0.0 },
+	  "ProfiledTorqueCommand":     { "t": "double", "v": 0.0 }
+	} , 
+	{ 
+	  "Encoder0":               { "t": "int32",  "v": 0 },
+	  "Encoder1":          { "t": "int32",  "v": 0 },
+	  "Encoder0Speed":          { "t": "single", "v": 0.0 },
+	  "Encoder1Speed":     { "t": "single", "v": 0.0 },
+	  "Iq":                        { "t": "single", "v": 0.0 },
+	  "Id":                        { "t": "single", "v": 0.0 },
+	  "DcBusVoltage":              { "t": "single", "v": 0.0 },
+	  "PowerStageTemperature":     { "t": "single", "v": 0.0 },
+	  "FieldAngle":                { "t": "single", "v": 0.0 },
+	  "ErrorCode":                 { "t": "uint32", "v": 0 },
+	  "LoopConfiguration":         { "t": "int16",  "v": 0 },
+	  "ReferenceMode":             { "t": "int16",  "v": 0 },
+	  "MotorOn":                   { "t": "int16",  "v": 0 },
+	  "HallCode":                  { "t": "int16",  "v": 0 },
+	  "STODisable":                { "t": "int16",  "v": 0 },
+	  "StatusBitField":            { "t": "int16",  "v": 0 },
+	  "ConfirmRelinquishControl":  { "t": "int16",  "v": 0 },
+	  "ProfiledPositionCommand":   { "t": "double", "v": 0.0 },
+	  "ProfiledSpeedCommand":      { "t": "double", "v": 0.0 },
+	  "ProfiledTorqueCommand":     { "t": "double", "v": 0.0 }
+	} , 
+	{ 
+	  "Encoder0":               { "t": "int32",  "v": 0 },
+	  "Encoder1":          { "t": "int32",  "v": 0 },
+	  "Encoder0Speed":          { "t": "single", "v": 0.0 },
+	  "Encoder1Speed":     { "t": "single", "v": 0.0 },
+	  "Iq":                        { "t": "single", "v": 0.0 },
+	  "Id":                        { "t": "single", "v": 0.0 },
+	  "DcBusVoltage":              { "t": "single", "v": 0.0 },
+	  "PowerStageTemperature":     { "t": "single", "v": 0.0 },
+	  "FieldAngle":                { "t": "single", "v": 0.0 },
+	  "ErrorCode":                 { "t": "uint32", "v": 0 },
+	  "LoopConfiguration":         { "t": "int16",  "v": 0 },
+	  "ReferenceMode":             { "t": "int16",  "v": 0 },
+	  "MotorOn":                   { "t": "int16",  "v": 0 },
+	  "HallCode":                  { "t": "int16",  "v": 0 },
+	  "STODisable":                { "t": "int16",  "v": 0 },
+	  "StatusBitField":            { "t": "int16",  "v": 0 },
+	  "ConfirmRelinquishControl":  { "t": "int16",  "v": 0 },
+	  "ProfiledPositionCommand":   { "t": "double", "v": 0.0 },
+	  "ProfiledSpeedCommand":      { "t": "double", "v": 0.0 },
+	  "ProfiledTorqueCommand":     { "t": "double", "v": 0.0 }
+	} 
+  ],
+  "AxesData": [
+    {
+      "Index":              { "t": "uint32", "v": 0 },
+      "Type":               { "t": "string", "v": "FSISlave" },
+      "Voltage":            { "t": "float", "v": 100 },
+      "ContinuousCurrent":  { "t": "float", "v": 10 },
+      "PeakCurrent":        { "t": "float", "v": 20 },
+      "SpeedLimit" :      { "t": "float", "v": 20 },
+      "MotorPhases":        { "t": "uint32", "v": 3 },
+      "HallSensors":        { "t": "bool",   "v": true },
+      "NumberOfEncoders":   { "t": "uint32", "v": 2 },
+      "Encoders": [
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Motor" },
+          "ModuloCount": { "t": "uint32", "v": 4096 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 100 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        },
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Load" },
+          "ModuloCount": { "t": "uint32", "v": 1048576 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 1 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        }
+      ]
+    },
+    {
+      "Index":              { "t": "uint32", "v": 1 },
+      "Type":               { "t": "string", "v": "FSISlave" },
+      "Voltage":            { "t": "float", "v": 100 },
+      "ContinuousCurrent":  { "t": "float", "v": 10 },
+      "PeakCurrent":        { "t": "float", "v": 20 },
+      "SpeedLimit" :      { "t": "float", "v": 20 },
+      "MotorPhases":        { "t": "uint32", "v": 3 },
+      "HallSensors":        { "t": "bool",   "v": true },
+      "NumberOfEncoders":   { "t": "uint32", "v": 2 },
+      "Encoders": [
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Motor" },
+          "ModuloCount": { "t": "uint32", "v": 4096 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 100 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        },
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Load" },
+          "ModuloCount": { "t": "uint32", "v": 1048576 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 1 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        }
+      ]
+    },
+    {
+      "Index":              { "t": "uint32", "v": 2 },
+      "Type":               { "t": "string", "v": "FSISlave" },
+      "Voltage":            { "t": "float", "v": 100 },
+      "ContinuousCurrent":  { "t": "float", "v": 10 },
+      "PeakCurrent":        { "t": "float", "v": 20 },
+      "SpeedLimit" :      { "t": "float", "v": 20 },
+      "MotorPhases":        { "t": "uint32", "v": 3 },
+      "HallSensors":        { "t": "bool",   "v": true },
+      "NumberOfEncoders":   { "t": "uint32", "v": 2 },
+      "Encoders": [
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Motor" },
+          "ModuloCount": { "t": "uint32", "v": 4096 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 100 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        },
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Load" },
+          "ModuloCount": { "t": "uint32", "v": 1048576 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 1 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        }
+      ]
+    },
+    {
+      "Index":              { "t": "uint32", "v": 3 },
+      "Type":               { "t": "string", "v": "FSISlave" },
+      "Voltage":            { "t": "float", "v": 100 },
+      "ContinuousCurrent":  { "t": "float", "v": 10 },
+      "PeakCurrent":        { "t": "float", "v": 20 },
+      "SpeedLimit" :      { "t": "float", "v": 20 },
+      "MotorPhases":        { "t": "uint32", "v": 3 },
+      "HallSensors":        { "t": "bool",   "v": true },
+      "NumberOfEncoders":   { "t": "uint32", "v": 2 },
+      "Encoders": [
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Motor" },
+          "ModuloCount": { "t": "uint32", "v": 4096 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 100 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        },
+        {
+          "Type":        { "t": "string", "v": "EBISS" },
+          "Location":    { "t": "string", "v": "Load" },
+          "ModuloCount": { "t": "uint32", "v": 1048576 },
+          "MutiTurn":    { "t": "bool",   "v": false },
+          "Gear2Load":   { "t": "uint32", "v": 1 },
+          "LowLimits":   { "t": "int64", "v": -9007199254740991 },
+          "HighLimit":   { "t": "int64", "v":  9007199254740991 }
+        }
+      ]
+    } 
+  ]
+}
